@@ -80,8 +80,6 @@ def train():
 
     device_setter = tf.train.replica_device_setter(ps_tasks=len(ps_hosts))
     with tf.device('/job:worker/task:%d' % FLAGS.task_id):
-      partitioner=tf.fixed_size_partitioner(len(ps_hosts), axis=0)
-      with tf.variable_scope('root', partitioner=partitioner):
         with tf.device(device_setter):
             global_step = tf.Variable(0, trainable=False)
 
@@ -90,11 +88,12 @@ def train():
             images, labels = cifar10.distorted_inputs(batch_size)
     #            print (str(tf.shape(images))+ str(tf.shape(labels)))
             re = tf.shape(images)[0]
+            with tf.variable_scope('root', partitioner=tf.fixed_size_partitioner(len(ps_hosts), axis=0)):
+                network_fn = nets_factory.get_network_fn('vgg_16',num_classes=10) 
             inputs = tf.reshape(images, [-1, _HEIGHT, _WIDTH, _DEPTH])
     #            labels = tf.reshape(labels, [-1, _NUM_CLASSES])
             labels = tf.one_hot(labels, 10, 1, 0)
             #network_fn = nets_factory.get_network_fn('inception_v3',num_classes=10) 
-            network_fn = nets_factory.get_network_fn('vgg_16',num_classes=10) 
             (logits,_) = network_fn(inputs)
             print(logits.get_shape())
             cross_entropy = tf.losses.softmax_cross_entropy(
