@@ -174,6 +174,8 @@ def train():
                 time0 = time.time()
                 batch_size_num = FLAGS.batch_size
                 
+                csv_file = open("./csv/alexnet_CPU_metrics_"+str(FLAGS.task_id)+".txt","w")
+                csv_file.write("time,datetime,step,global_step,loss,examples_sec,sec_batch,duration,cpu,mem,net_usage\n")
                 for step in range(FLAGS.max_steps):
                     start_time = time.time()
 
@@ -234,8 +236,11 @@ def train():
 
                         format_str = ("time: " + str(time.time()) +
                          '; %s: step %d (global_step %d), loss = %.2f (%.1f examples/sec; %.3f sec/batch), duration = %.3f sec, cpu = %.3f, mem = %.3f MB, net usage= %.3f MB')
+                        csv_output = (str(time.time())+',%s,%d,%d,%.2f,%.1f,%.3f,%.3f,%.3f,%.3f,%.3f')%(datetime.now(), step, gs, loss_value, examples_per_sec, sec_per_batch, duration, cpu_use, memoryUse, net_usage)
+                        #csv_file = open("alexnet_CPU_metrics_"+str(FLAGS.task_id),"w")
+                        csv_file.write(csv_output+"\n")
                         tf.logging.info(format_str % (datetime.now(), step, gs, loss_value, examples_per_sec, sec_per_batch, duration, cpu_use, memoryUse, net_usage))
-
+                csv_file.close()
 
             """Train CIFAR-10 for a number of steps."""
 #            available_cpu = psutil.cpu_percent(interval=None)
