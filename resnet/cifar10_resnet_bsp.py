@@ -17,7 +17,6 @@ import resnet_model
 import cifar10
 from tensorflow.python.client import timeline
 
-import threading2
 
 import psutil
 import random
