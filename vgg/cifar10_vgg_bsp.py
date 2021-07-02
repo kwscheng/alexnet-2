@@ -184,7 +184,7 @@ def train():
             loss_list = []
             threshold = 0.95
 
-            csv_file = open("./csv/vgg_CPU_metrics_"+str(FLAGS.task_id)+".txt","w")
+            csv_file = open("../csv/vgg_CPU_metrics_"+str(FLAGS.task_id)+".txt","w")
             csv_file.write("time,datetime,step,global_step,loss,examples_sec,sec_batch,duration,cpu,mem,net_usage\n")
 
             for step in range(FLAGS.max_steps):
