@@ -53,7 +53,7 @@ FLAGS = tf.app.flags.FLAGS
 #tf.app.flags.DEFINE_integer('batch_size', 128,
 tf.app.flags.DEFINE_integer('batch_size', 128,
                             """Number of images to process in a batch.""")
-tf.app.flags.DEFINE_string('data_dir', '/home/ubuntu/cifar10_data',
+tf.app.flags.DEFINE_string('data_dir', './cifar10_data',
                            """Path to the CIFAR-10 data directory.""")
 
 tf.app.flags.DEFINE_string('job_name', '', 'One of "ps", "worker"')
@@ -69,7 +69,7 @@ tf.app.flags.DEFINE_integer('task_id', 0, 'Task ID of the worker/replica running
 #tf.app.flags.DEFINE_integer('batch_size', 128, 'initial batch size on each worker')
 
 
-tf.app.flags.DEFINE_string('train_dir', '/home/ubuntu/cifar10_train',
+tf.app.flags.DEFINE_string('train_dir', './cifar10_train',
                            """Directory where to write event logs """
                            """and checkpoint.""")
 #tf.app.flags.DEFINE_integer('max_steps', 1000000,
