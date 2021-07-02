@@ -104,7 +104,7 @@ def train():
 #            print (str(tf.shape(images))+ str(tf.shape(labels)))
             re = tf.shape(images)[0]
 	    with tf.variable_scope('root', partitioner=tf.fixed_size_partitioner(len(ps_hosts), axis=0)):
-                network = resnet_model.cifar10_resnet_v2_generator(FLAGS.resnet_size, _NUM_CLASSES)
+            network = resnet_model.cifar10_resnet_v2_generator(FLAGS.resnet_size, _NUM_CLASSES)
             inputs = tf.reshape(images, [-1, _HEIGHT, _WIDTH, _DEPTH])
 #            labels = tf.reshape(labels, [-1, _NUM_CLASSES])
             print(labels.get_shape())
