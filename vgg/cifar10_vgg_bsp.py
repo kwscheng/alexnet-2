@@ -159,7 +159,9 @@ def train():
 
             tf.logging.info('%s Supervisor' % datetime.now())
             sess_config = tf.ConfigProto(allow_soft_placement=True,
-   	                                 log_device_placement=FLAGS.log_device_placement)
+                                    intra_op_parallelism_threads=1,
+					                inter_op_parallelism_threads=1,
+   	                                log_device_placement=FLAGS.log_device_placement)
             sess_config.gpu_options.allow_growth = True
 
    	    # Get a session.
