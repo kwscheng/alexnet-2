@@ -53,13 +53,22 @@ def alexnet_v2_arg_scope(weight_decay=0.0005):
         return arg_sc
 
 
+# def alexnet_v2(inputs,
+#                num_classes=1000,
+#                is_training=True,
+#                dropout_keep_prob=0.5,
+#                spatial_squeeze=True,
+#                scope='alexnet_v2',
+#                global_pool=False):
+
+
 def alexnet_v2(inputs,
-               num_classes=1000,
+               num_classes=10,
                is_training=True,
                dropout_keep_prob=0.5,
                spatial_squeeze=True,
                scope='alexnet_v2',
-               global_pool=False):
+               global_pool=True):
   """AlexNet version 2.
 
   Described in: http://arxiv.org/pdf/1404.5997v2.pdf

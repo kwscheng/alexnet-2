@@ -100,7 +100,7 @@ def train():
                 network_fn = nets_factory.get_network_fn('alexnet_v2',num_classes=10) 
                 (logits,_) = network_fn(inputs)
                 print(logits.get_shape())
-                cross_entropy = tf.losses.softmax_cross_entropy(logits=logits,onehot_labels=labels)
+                cross_entropy = tf.losses.sigmoid_cross_entropy(multi_class_labels=labels, logits=logits)
 
 #            logits = cifar10.inference(images, batch_size)
 
