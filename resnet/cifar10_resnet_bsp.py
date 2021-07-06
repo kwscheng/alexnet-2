@@ -205,15 +205,17 @@ def train():
                 start_time = time.time()
 
                 if FLAGS.job_name == 'worker' and FLAGS.task_id == 0 :
-                        current_process.cpu_affinity([random.randint(0,2)])
+                        current_process.cpu_affinity([random.randint(0,3)])
                 elif FLAGS.job_name == 'worker' and FLAGS.task_id == 1 :
                         current_process.cpu_affinity([random.randint(0,3)])
                 elif FLAGS.job_name == 'worker' and FLAGS.task_id == 2 :
-                        current_process.cpu_affinity([random.randint(0,2)])
+                        current_process.cpu_affinity([random.randint(0,3)])
                 elif FLAGS.job_name == 'worker' and FLAGS.task_id == 3 :
                         current_process.cpu_affinity([random.randint(0,3)])
                 elif FLAGS.job_name == 'worker' and FLAGS.task_id == 4 :
                         current_process.cpu_affinity([random.randint(0,3)])
+
+                current_cpu = current_process.cpu_num()
 
                 run_options = tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE)
                 run_metadata = tf.RunMetadata()
@@ -267,7 +269,7 @@ def train():
                             '; %s: step %d (global_step %d), loss = %.2f (%.1f examples/sec; %.3f sec/batch), duration = %.3f sec, cpu = %.3f, mem = %.3f MB, net usage= %.3f MB')
                     csv_output = (str(time.time())+',%s,%d,%d,%.2f,%.1f,%.3f,%.3f,%.3f,%.3f,%.3f')%(datetime.now(), step, gs, loss_value, examples_per_sec, sec_per_batch, duration, cpu_use, memoryUse, net_usage)
                     csv_file.write(csv_output+"\n")         
-                    tf.logging.info(format_str % (datetime.now(), step, gs, loss_value, examples_per_sec, sec_per_batch, duration, cpu_use, memoryUse, net_usage))
+                    tf.logging.info((format_str % (datetime.now(), step, gs, loss_value, examples_per_sec, sec_per_batch, duration, cpu_use, memoryUse, net_usage))+", current cpu: "+current_cpu)
     ##		    tf.logging.info("time: "+str(time.time()) + "; batch_size,"+str(batch_size_num)+"; last_batch_time," + str(last_batch_time) + '\n')
             csv_file.close()
 
