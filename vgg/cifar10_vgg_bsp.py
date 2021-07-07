@@ -179,7 +179,7 @@ def train():
 
             time0 = time.time()
             batch_size_num = FLAGS.batch_size
-            loss_list = []
+            #loss_list = []
             threshold = 0.95
 
             csv_file = open("../csv/vgg_CPU_metrics_"+str(FLAGS.task_id)+".txt","w")
@@ -190,11 +190,11 @@ def train():
                 start_time = time.time()
 
                 if FLAGS.job_name == 'worker' and FLAGS.task_id == 0 :
-                        current_process.cpu_affinity([random.randint(0,2)])
+                        current_process.cpu_affinity([random.randint(0,3)])
                 elif FLAGS.job_name == 'worker' and FLAGS.task_id == 1 :
                         current_process.cpu_affinity([random.randint(0,3)])
                 elif FLAGS.job_name == 'worker' and FLAGS.task_id == 2 :
-                        current_process.cpu_affinity([random.randint(0,2)])
+                        current_process.cpu_affinity([random.randint(0,3)])
                 elif FLAGS.job_name == 'worker' and FLAGS.task_id == 3 :
                         current_process.cpu_affinity([random.randint(0,3)])
                 elif FLAGS.job_name == 'worker' and FLAGS.task_id == 4 :
@@ -233,10 +233,10 @@ def train():
                         #csv_file = open("alexnet_CPU_metrics_"+str(FLAGS.task_id),"w")
                     csv_file.write(csv_output+"\n")
                     tf.logging.info(format_str % (datetime.now(), step, gs, loss_value, examples_per_sec, sec_per_batch, duration, cpu_use, memoryUse, net_usage))
-                    loss_list.append(loss_value)
-                    if step > 10 and loss_list[-1] < loss_list[0]*0.95 and loss_list[-2] < loss_list[0]*0.95:
-                        tf.logging.info("Haha cc-terminate: step "+str(step))
-                        exit()
+                    #loss_list.append(loss_value)
+                    #if step > 10 and loss_list[-1] < loss_list[0]*0.95 and loss_list[-2] < loss_list[0]*0.95:
+                    #    tf.logging.info("Haha cc-terminate: step "+str(step))
+                    #    exit()
             csv_file.close()
 		        
 def main(argv=None):
