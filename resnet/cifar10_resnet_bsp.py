@@ -182,7 +182,6 @@ def train():
 
    	    # Get a session.
             sess = sv.prepare_or_wait_for_session(server.target, config=sess_config)
-            sess.run(tf.local_variables_initializer())
 
             local_var_stream = [i for i in tf.local_variables()]
             print(local_var_stream)
