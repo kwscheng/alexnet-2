@@ -244,7 +244,7 @@ def train():
 #                mgrads, images_, train_val, real, loss_value, gs = sess.run([grads, images, train_op, re, loss, global_step], feed_dict={batch_size: batch_size_num},  options=run_options, run_metadata=run_metadata)
                 _, loss_value, gs = sess.run([train_op, loss, global_step], feed_dict={batch_size: batch_size_num},  options=run_options, run_metadata=run_metadata)
 #                _, loss_value, gs = sess.run([train_op, loss, global_step], feed_dict={batch_size: batch_size_num}) 
-                sess.run(acc_op)
+                sess.run(acc_op, feed_dict={batch_size: batch_size_num})
                 accuracy = sess.run(acc)
                 cpu_use=current_process.cpu_percent(interval=None)
                 memoryUse = pid_use.memory_info()[0]/2.**20
