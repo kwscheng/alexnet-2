@@ -114,6 +114,7 @@ def train():
             cross_entropy = tf.losses.softmax_cross_entropy(
                 logits=logits, 
                 onehot_labels=labels)
+            acc, acc_op = tf.metrics.accuracy(labels=tf.argmax(labels,1),predictions=tf.argmax(logits,1))
 
 #            logits = cifar10.inference(images, batch_size)
 
@@ -181,6 +182,11 @@ def train():
 
    	    # Get a session.
             sess = sv.prepare_or_wait_for_session(server.target, config=sess_config)
+            sess.run(tf.local_variables_initializer())
+
+            local_var_stream = [i for i in tf.local_variables()]
+            print(local_var_stream)
+            print("accuracy: ", sess.run(acc))
 #	    sess.run(tf.global_variables_initializer())
 
             # Start the queue runners.
@@ -239,7 +245,8 @@ def train():
 #                mgrads, images_, train_val, real, loss_value, gs = sess.run([grads, images, train_op, re, loss, global_step], feed_dict={batch_size: batch_size_num},  options=run_options, run_metadata=run_metadata)
                 _, loss_value, gs = sess.run([train_op, loss, global_step], feed_dict={batch_size: batch_size_num},  options=run_options, run_metadata=run_metadata)
 #                _, loss_value, gs = sess.run([train_op, loss, global_step], feed_dict={batch_size: batch_size_num}) 
-
+                sess.run(acc_op)
+                accuracy = sess.run(acc)
                 cpu_use=current_process.cpu_percent(interval=None)
                 memoryUse = pid_use.memory_info()[0]/2.**20
                 b = time.time()
@@ -266,10 +273,10 @@ def train():
     ##                    tf.logging.info("time statistics - batch_process_time: " + str( last_batch_time)  + " - train_time: " + str(b-start_time) + " - get_batch_time: " + str(c0-b) + " - get_bs_time:  " + str(c-c0) + " - accum_time: " + str(c-time0))
 
                     format_str = ("time: " + str(time.time()) +
-                            '; %s: step %d (global_step %d), loss = %.2f (%.1f examples/sec; %.3f sec/batch), duration = %.3f sec, cpu = %.3f, mem = %.3f MB, net usage= %.3f MB')
-                    csv_output = (str(time.time())+',%s,%d,%d,%.2f,%.1f,%.3f,%.3f,%.3f,%.3f,%.3f')%(datetime.now(), step, gs, loss_value, examples_per_sec, sec_per_batch, duration, cpu_use, memoryUse, net_usage)
+                            '; %s: step %d (global_step %d), loss = %.2f, accuracy = %.3f (%.1f examples/sec; %.3f sec/batch), duration = %.3f sec, cpu = %.3f, mem = %.3f MB, net usage= %.3f MB')
+                    csv_output = (str(time.time())+',%s,%d,%d,%.2f, %.3f, %.1f,%.3f,%.3f,%.3f,%.3f,%.3f')%(datetime.now(), step, gs, loss_value, accuracy, examples_per_sec, sec_per_batch, duration, cpu_use, memoryUse, net_usage)
                     csv_file.write(csv_output+"\n")         
-                    tf.logging.info((format_str % (datetime.now(), step, gs, loss_value, examples_per_sec, sec_per_batch, duration, cpu_use, memoryUse, net_usage))+", current cpu: "+str(current_cpu))
+                    tf.logging.info((format_str % (datetime.now(), step, gs, loss_value, accuracy, examples_per_sec, sec_per_batch, duration, cpu_use, memoryUse, net_usage))+", current cpu: "+str(current_cpu))
     ##		    tf.logging.info("time: "+str(time.time()) + "; batch_size,"+str(batch_size_num)+"; last_batch_time," + str(last_batch_time) + '\n')
             csv_file.close()
 
