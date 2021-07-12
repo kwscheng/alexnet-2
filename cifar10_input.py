@@ -218,8 +218,8 @@ def distorted_inputs(job_name, task_id, data_dir, batch_size):
 #                                         min_queue_examples, batch_size,
                                          shuffle=True)
 
-def get_validation_data(job_name, task_id, data_dir, batch_size):
-  """Construct distorted input for CIFAR training using the Reader ops.
+def get_validation_data(data_dir, batch_size):
+  """Construct input for CIFAR evaluation using the Reader ops.
 
   Args:
     data_dir: Path to the CIFAR-10 data directory.
@@ -245,25 +245,12 @@ def get_validation_data(job_name, task_id, data_dir, batch_size):
   height = IMAGE_SIZE
   width = IMAGE_SIZE
 
-  # Image processing for training the network. Note the many random
-  # distortions applied to the image.
-
-  # Randomly crop a [height, width] section of the image.
-  distorted_image = tf.random_crop(reshaped_image, [height, width, 3])
-
-  # Randomly flip the image horizontally.
-  distorted_image = tf.image.random_flip_left_right(distorted_image)
-
-  # Because these operations are not commutative, consider randomizing
-  # the order their operation.
-  distorted_image = tf.image.random_brightness(distorted_image,
-                                               max_delta=63)
-  distorted_image = tf.image.random_contrast(distorted_image,
-                                             lower=0.2, upper=1.8)
+  resized_image = tf.image.resize_image_with_crop_or_pad(reshaped_image,
+                                                         width, height)
 
   # Subtract off the mean and divide by the variance of the pixels.
 #  float_image = tf.image.per_image_whitening(distorted_image)
-  float_image = tf.image.per_image_standardization(distorted_image)
+  float_image = tf.image.per_image_standardization(resized_image)
 
   # Ensure that the random shuffling has good mixing properties.
   min_fraction_of_examples_in_queue = 0.4
@@ -274,8 +261,8 @@ def get_validation_data(job_name, task_id, data_dir, batch_size):
   return _generate_image_and_label_batch(float_image, read_input.label,
                                          min_queue_examples, batch_size,
 #                                         min_queue_examples, batch_size,
-                                         shuffle=True)
-
+                                         shuffle=False)
+                                         
 def inputs(eval_data, data_dir, batch_size):
   """Construct input for CIFAR evaluation using the Reader ops.
 

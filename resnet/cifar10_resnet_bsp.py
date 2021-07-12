@@ -15,6 +15,7 @@ import resnet_model
 #from batchsizemanager import BatchSizeManager
 
 import cifar10
+import cifar10_input
 from tensorflow.python.client import timeline
 
 
@@ -100,21 +101,26 @@ def train():
             decay_steps = 50000*350.0/FLAGS.batch_size
             batch_size = tf.placeholder(dtype=tf.int32, shape=(), name='batch_size')
             images, labels = cifar10.distorted_inputs(batch_size)
+            val_images, val_labels = cifar10_input.get_validation_data(data_dir="data/cifar10_data",batch_size=batch_size/4)
 #            print (str(tf.shape(images))+ str(tf.shape(labels)))
             re = tf.shape(images)[0]
             with tf.variable_scope('root', partitioner=tf.fixed_size_partitioner(len(ps_hosts), axis=0)):
                 network = resnet_model.cifar10_resnet_v2_generator(FLAGS.resnet_size, _NUM_CLASSES)
             inputs = tf.reshape(images, [-1, _HEIGHT, _WIDTH, _DEPTH])
+            val_inputs = tf.reshape(val_images, [-1, _HEIGHT, _WIDTH, _DEPTH])
 #            labels = tf.reshape(labels, [-1, _NUM_CLASSES])
             print(labels.get_shape())
             labels = tf.one_hot(labels, 10, 1, 0)
+            val_labels = tf.one_hot(val_labels, 10, 1, 0)
             print(labels.get_shape())
             logits = network(inputs, True)
+            val_logits = network(val_inputs, False)
             print(logits.get_shape())
             cross_entropy = tf.losses.softmax_cross_entropy(
                 logits=logits, 
                 onehot_labels=labels)
             acc, acc_op = tf.metrics.accuracy(labels=tf.argmax(labels,1),predictions=tf.argmax(logits,1))
+            val_acc, val_op = tf.metrics.accuracy(labels=tf.argmax(val_labels,1),predictions=tf.argmax(val_logits,1))
 
 #            logits = cifar10.inference(images, batch_size)
 
@@ -204,7 +210,7 @@ def train():
             time0 = time.time()
             batch_size_num = FLAGS.batch_size
             csv_file = open("../csv/resnet_CPU_metrics_"+str(FLAGS.task_id)+".csv","w")
-            csv_file.write("time,datetime,step,global_step,loss,accuracy,examples_sec,sec_batch,duration,cpu,mem,net_usage\n")
+            csv_file.write("time,datetime,step,global_step,loss,accuracy,val_accuracy,examples_sec,sec_batch,duration,cpu,mem,net_usage\n")
             for step in range(FLAGS.max_steps):
 
                 start_time = time.time()
@@ -246,6 +252,8 @@ def train():
 #                _, loss_value, gs = sess.run([train_op, loss, global_step], feed_dict={batch_size: batch_size_num}) 
                 sess.run(acc_op, feed_dict={batch_size: batch_size_num})
                 accuracy = sess.run(acc)
+                sess.run(val_op, feed_dict={batch_size:32})
+                val_accuracy = sess.run(val_acc)
                 cpu_use=current_process.cpu_percent(interval=None)
                 memoryUse = pid_use.memory_info()[0]/2.**20
                 b = time.time()
@@ -272,10 +280,10 @@ def train():
     ##                    tf.logging.info("time statistics - batch_process_time: " + str( last_batch_time)  + " - train_time: " + str(b-start_time) + " - get_batch_time: " + str(c0-b) + " - get_bs_time:  " + str(c-c0) + " - accum_time: " + str(c-time0))
 
                     format_str = ("time: " + str(time.time()) +
-                            '; %s: step %d (global_step %d), loss = %.2f, accuracy = %.3f (%.1f examples/sec; %.3f sec/batch), duration = %.3f sec, cpu = %.3f, mem = %.3f MB, net usage= %.3f MB')
-                    csv_output = (str(time.time())+',%s,%d,%d,%.2f,%.3f,%.1f,%.3f,%.3f,%.3f,%.3f,%.3f')%(datetime.now(), step, gs, loss_value, accuracy, examples_per_sec, sec_per_batch, duration, cpu_use, memoryUse, net_usage)
+                            '; %s: step %d (global_step %d), loss = %.2f, accuracy = %.3f, val_accuracy = %.3f (%.1f examples/sec; %.3f sec/batch), duration = %.3f sec, cpu = %.3f, mem = %.3f MB, net usage= %.3f MB')
+                    csv_output = (str(time.time())+',%s,%d,%d,%.2f,%.3f,%.3f,%.1f,%.3f,%.3f,%.3f,%.3f,%.3f')%(datetime.now(), step, gs, loss_value, accuracy, examples_per_sec, sec_per_batch, duration, cpu_use, memoryUse, net_usage)
                     csv_file.write(csv_output+"\n")         
-                    tf.logging.info((format_str % (datetime.now(), step, gs, loss_value, accuracy, examples_per_sec, sec_per_batch, duration, cpu_use, memoryUse, net_usage))+", current cpu: "+str(current_cpu))
+                    tf.logging.info((format_str % (datetime.now(), step, gs, loss_value, accuracy, val_accuracy, examples_per_sec, sec_per_batch, duration, cpu_use, memoryUse, net_usage))+", current cpu: "+str(current_cpu))
     ##		    tf.logging.info("time: "+str(time.time()) + "; batch_size,"+str(batch_size_num)+"; last_batch_time," + str(last_batch_time) + '\n')
             csv_file.close()
 
