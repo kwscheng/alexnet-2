@@ -101,7 +101,7 @@ def train():
             decay_steps = 50000*350.0/FLAGS.batch_size
             batch_size = tf.placeholder(dtype=tf.int32, shape=(), name='batch_size')
             images, labels = cifar10.distorted_inputs(batch_size)
-            val_images, val_labels = cifar10_input.get_validation_data(data_dir="data/cifar10_data",batch_size=batch_size/4)
+            val_images, val_labels = cifar10_input.get_validation_data(batch_size=batch_size/4)
 #            print (str(tf.shape(images))+ str(tf.shape(labels)))
             re = tf.shape(images)[0]
             with tf.variable_scope('root', partitioner=tf.fixed_size_partitioner(len(ps_hosts), axis=0)):

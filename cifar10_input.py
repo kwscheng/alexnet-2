@@ -218,7 +218,7 @@ def distorted_inputs(job_name, task_id, data_dir, batch_size):
 #                                         min_queue_examples, batch_size,
                                          shuffle=True)
 
-def get_validation_data(data_dir, batch_size):
+def get_validation_data(batch_size):
   """Construct input for CIFAR evaluation using the Reader ops.
 
   Args:
@@ -229,9 +229,9 @@ def get_validation_data(data_dir, batch_size):
     images: Images. 4D tensor of [batch_size, IMAGE_SIZE, IMAGE_SIZE, 3] size.
     labels: Labels. 1D tensor of [batch_size] size.
   """
-  filename = os.path.join(data_dir, 'test_batch.bin')
+  filename = os.path.join("../data/cifar10_data", 'test_batch.bin')
   if not tf.gfile.Exists(filename):
-    raise ValueError('Failed to find file: ' + f)
+    raise ValueError('Failed to find file: ' + filename)
 
   
   
@@ -262,7 +262,7 @@ def get_validation_data(data_dir, batch_size):
                                          min_queue_examples, batch_size,
 #                                         min_queue_examples, batch_size,
                                          shuffle=False)
-                                         
+
 def inputs(eval_data, data_dir, batch_size):
   """Construct input for CIFAR evaluation using the Reader ops.
 
