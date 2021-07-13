@@ -116,6 +116,8 @@ def train():
             logits = network(inputs, True)
             val_logits = network(val_inputs, False)
             print(logits.get_shape())
+            print(val_logits)
+            print(val_labels)
             cross_entropy = tf.losses.softmax_cross_entropy(
                 logits=logits, 
                 onehot_labels=labels)
