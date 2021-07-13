@@ -258,8 +258,8 @@ def train():
                 accuracy = sess.run(acc)
                 sess.run(val_op, feed_dict={batch_size:32})
                 val_accuracy = sess.run(val_acc)
-                print("Val logits: ",sess.run(val_logits))
-                print("Val labels: ", sess.run(val_labels))
+                print("Val logits: ",sess.run(tf.argmax(val_logits,1)))
+                print("Val labels: ", tf.argmax(sess.run(val_labels)))
                 cpu_use=current_process.cpu_percent(interval=None)
                 memoryUse = pid_use.memory_info()[0]/2.**20
                 b = time.time()
