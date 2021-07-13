@@ -118,6 +118,8 @@ def train():
             print(logits.get_shape())
             print(val_logits)
             print(val_labels)
+            #print_val_logits = tf.print(val_logits, [val_logits], "Val logits: ")
+            #print_val_labels = tf.print(val_labels, [val_labels], "Val labels: ")
             cross_entropy = tf.losses.softmax_cross_entropy(
                 logits=logits, 
                 onehot_labels=labels)
@@ -256,6 +258,8 @@ def train():
                 accuracy = sess.run(acc)
                 sess.run(val_op, feed_dict={batch_size:32})
                 val_accuracy = sess.run(val_acc)
+                print("Val logits: ",sess.run(val_logits))
+                print("Val labels: ", sess.run(val_labels))
                 cpu_use=current_process.cpu_percent(interval=None)
                 memoryUse = pid_use.memory_info()[0]/2.**20
                 b = time.time()
