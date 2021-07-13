@@ -212,8 +212,8 @@ def get_validation_data(batch_size):
     images: Images. 4D tensor of [batch_size, IMAGE_SIZE, IMAGE_SIZE, 3] size.
     labels: Labels. 1D tensor of [batch_size] size.
   """
-  filename = os.path.join("../data/cifar10_data", 'test_batch.bin')
-  if not tf.gfile.Exists(filename):
+  filename = [os.path.join('../data/cifar10_data/cifar-10-batches-bin', 'test_batch.bin')]
+  if not tf.gfile.Exists('../data/cifar10_data/cifar-10-batches-bin/test_batch.bin'): #HARDCODED: Change if path different
     raise ValueError('Failed to find file: ' + filename)
 
   
