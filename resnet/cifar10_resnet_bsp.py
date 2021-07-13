@@ -125,7 +125,8 @@ def train():
                 onehot_labels=labels)
             acc, acc_op = tf.metrics.accuracy(labels=tf.argmax(labels,1),predictions=tf.argmax(logits,1))
             val_acc, val_op = tf.metrics.accuracy(labels=tf.argmax(val_labels,1),predictions=tf.argmax(val_logits,1))
-
+            index_val_logits = tf.argmax(val_logits,1)
+            index_val_labels = tf.argmax(val_labels,1)
 #            logits = cifar10.inference(images, batch_size)
 
 #            loss = cifar10.loss(logits, labels, batch_size)
@@ -258,8 +259,8 @@ def train():
                 accuracy = sess.run(acc)
                 sess.run(val_op, feed_dict={batch_size:32})
                 val_accuracy = sess.run(val_acc)
-                print("Val logits: ",sess.run(tf.argmax(val_logits,1)))
-                print("Val labels: ", tf.argmax(sess.run(val_labels)))
+                print("Val logits: ",sess.run(index_val_logits))
+                print("Val labels: ", sess.run(index_val_labels))
                 cpu_use=current_process.cpu_percent(interval=None)
                 memoryUse = pid_use.memory_info()[0]/2.**20
                 b = time.time()
