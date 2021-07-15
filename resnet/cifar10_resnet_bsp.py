@@ -114,7 +114,8 @@ def train():
             val_labels = tf.one_hot(val_labels, 10, 1, 0)
             print(labels.get_shape())
             logits = network(inputs, True)
-            val_logits = network(val_inputs, False) #apply network function to validation images, is_training=false
+            #val_logits = network(val_inputs, False) #apply network function to validation images, is_training=false
+            val_logits = tf.placeholder(dtype=tf.float32, shape=(),name='val_logits' )
             print(logits.get_shape())
             print(val_logits)
             print(val_labels)
@@ -125,8 +126,6 @@ def train():
                 onehot_labels=labels)
             acc, acc_op = tf.metrics.accuracy(labels=tf.argmax(labels,1),predictions=tf.argmax(logits,1)) 
             val_acc, val_op = tf.metrics.accuracy(labels=tf.argmax(val_labels,1),predictions=tf.argmax(val_logits,1)) #returns validation accuracy and update op
-            index_val_logits = tf.argmax(val_logits,1) 
-            index_val_labels = tf.argmax(val_labels,1)
 #            logits = cifar10.inference(images, batch_size)
 
 #            loss = cifar10.loss(logits, labels, batch_size)
@@ -240,7 +239,10 @@ def train():
 
                 netio = psutil.net_io_counters(pernic=True)
                 net_usage = (netio[NETWORK_INTERFACE].bytes_sent + netio[NETWORK_INTERFACE].bytes_recv)/ (1024*1024)
-
+                
+                val_logits = network(val_inputs, False)
+                index_val_logits = tf.argmax(val_logits,1) 
+                index_val_labels = tf.argmax(val_labels,1)
                 sess.run(val_op, feed_dict={batch_size:32})
                 val_accuracy = sess.run(val_acc)
                 print("Val logits: ",sess.run(index_val_logits))
