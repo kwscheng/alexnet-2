@@ -114,8 +114,7 @@ def train():
             val_labels = tf.one_hot(val_labels, 10, 1, 0)
             print(labels.get_shape())
             logits = network(inputs, True)
-            #val_logits = network(val_inputs, False) #apply network function to validation images, is_training=false
-            val_logits = tf.placeholder(dtype=tf.float32, shape=(),name='val_logits' )
+            val_logits = network(val_inputs, False) #apply network function to validation images, is_training=false
             print(logits.get_shape())
             print(val_logits)
             print(val_labels)
