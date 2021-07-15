@@ -243,7 +243,6 @@ def train():
 
                 sess.run(val_op, feed_dict={batch_size:32})
                 val_accuracy = sess.run(val_acc)
-                print(sess.run(tf.Variable.read_value(val_acc)))
                 print("Val logits: ",sess.run(index_val_logits))
                 print("Val labels: ", sess.run(index_val_labels))
 
