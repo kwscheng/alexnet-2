@@ -95,13 +95,13 @@ def train():
         tf.gfile.MakeDirs(FLAGS.train_dir)
 
     device_setter = tf.train.replica_device_setter(ps_tasks=len(ps_hosts))
+    val_images, val_labels = cifar10_input.get_validation_data(batch_size=32) #load validation images and labels, outside of device context manager
     with tf.device('/job:worker/task:%d' % FLAGS.task_id):
         with tf.device(device_setter):
             global_step = tf.Variable(0, trainable=False)
             decay_steps = 50000*350.0/FLAGS.batch_size
             batch_size = tf.placeholder(dtype=tf.int32, shape=(), name='batch_size')
             images, labels = cifar10.distorted_inputs(batch_size)
-            val_images, val_labels = cifar10_input.get_validation_data(batch_size=32)
 #            print (str(tf.shape(images))+ str(tf.shape(labels)))
             re = tf.shape(images)[0]
             with tf.variable_scope('root', partitioner=tf.fixed_size_partitioner(len(ps_hosts), axis=0)):
@@ -114,7 +114,7 @@ def train():
             val_labels = tf.one_hot(val_labels, 10, 1, 0)
             print(labels.get_shape())
             logits = network(inputs, True)
-            val_logits = network(val_inputs, False)
+            val_logits = network(val_inputs, False) #apply network function to validation images, is_training=false
             print(logits.get_shape())
             print(val_logits)
             print(val_labels)
@@ -123,9 +123,9 @@ def train():
             cross_entropy = tf.losses.softmax_cross_entropy(
                 logits=logits, 
                 onehot_labels=labels)
-            acc, acc_op = tf.metrics.accuracy(labels=tf.argmax(labels,1),predictions=tf.argmax(logits,1))
-            val_acc, val_op = tf.metrics.accuracy(labels=tf.argmax(val_labels,1),predictions=tf.argmax(val_logits,1))
-            index_val_logits = tf.argmax(val_logits,1)
+            acc, acc_op = tf.metrics.accuracy(labels=tf.argmax(labels,1),predictions=tf.argmax(logits,1)) 
+            val_acc, val_op = tf.metrics.accuracy(labels=tf.argmax(val_labels,1),predictions=tf.argmax(val_logits,1)) #returns validation accuracy and update op
+            index_val_logits = tf.argmax(val_logits,1) 
             index_val_labels = tf.argmax(val_labels,1)
 #            logits = cifar10.inference(images, batch_size)
 
@@ -241,6 +241,12 @@ def train():
                 netio = psutil.net_io_counters(pernic=True)
                 net_usage = (netio[NETWORK_INTERFACE].bytes_sent + netio[NETWORK_INTERFACE].bytes_recv)/ (1024*1024)
 
+                sess.run(val_op, feed_dict={batch_size:32})
+                val_accuracy = sess.run(val_acc)
+                print(sess.run(tf.Variable.read_value(val_acc)))
+                print("Val logits: ",sess.run(index_val_logits))
+                print("Val labels: ", sess.run(index_val_labels))
+
     #                batch_size_num = updated_batch_size_num
                 if step <= 5:
                     batch_size_num = FLAGS.batch_size
@@ -255,12 +261,8 @@ def train():
 #                mgrads, images_, train_val, real, loss_value, gs = sess.run([grads, images, train_op, re, loss, global_step], feed_dict={batch_size: batch_size_num},  options=run_options, run_metadata=run_metadata)
                 _, loss_value, gs = sess.run([train_op, loss, global_step], feed_dict={batch_size: batch_size_num},  options=run_options, run_metadata=run_metadata)
 #                _, loss_value, gs = sess.run([train_op, loss, global_step], feed_dict={batch_size: batch_size_num}) 
-                sess.run(acc_op, feed_dict={batch_size: batch_size_num})
-                accuracy = sess.run(acc)
-                sess.run(val_op, feed_dict={batch_size:32})
-                val_accuracy = sess.run(val_acc)
-                print("Val logits: ",sess.run(index_val_logits))
-                print("Val labels: ", sess.run(index_val_labels))
+                sess.run(acc_op, feed_dict={batch_size: batch_size_num}) #update accuracy
+                accuracy = sess.run(acc) #
                 cpu_use=current_process.cpu_percent(interval=None)
                 memoryUse = pid_use.memory_info()[0]/2.**20
                 b = time.time()
