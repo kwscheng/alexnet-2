@@ -242,8 +242,8 @@ def train():
                 val_logits = network(val_inputs, False)
                 index_val_logits = tf.argmax(val_logits,1) 
                 index_val_labels = tf.argmax(val_labels,1)
-                sess.run(val_op, feed_dict={batch_size:32})
-                val_accuracy = sess.run(val_acc)
+                sess.run(val_op)
+                val_accuracy = tf.Variable.read_value(val_acc)
                 print("Val logits: ",sess.run(index_val_logits))
                 print("Val labels: ", sess.run(index_val_labels))
 
