@@ -128,7 +128,7 @@ def train():
 
             index_val_logits = tf.argmax(val_logits,1) 
             index_val_labels = tf.argmax(val_labels,1)
-
+                
 #            logits = cifar10.inference(images, batch_size)
 
 #            loss = cifar10.loss(logits, labels, batch_size)
@@ -244,7 +244,7 @@ def train():
                 net_usage = (netio[NETWORK_INTERFACE].bytes_sent + netio[NETWORK_INTERFACE].bytes_recv)/ (1024*1024)
                 
                 sess.run(val_op)
-                val_accuracy = tf.Variable.read_value(val_acc)
+                val_accuracy = sess.run(val_acc)
                 print("Val logits: ",sess.run(index_val_logits))
                 print("Val labels: ", sess.run(index_val_labels))
 
