@@ -239,7 +239,6 @@ def train():
                 netio = psutil.net_io_counters(pernic=True)
                 net_usage = (netio[NETWORK_INTERFACE].bytes_sent + netio[NETWORK_INTERFACE].bytes_recv)/ (1024*1024)
                 
-                val_logits = network(val_inputs, False)
                 index_val_logits = tf.argmax(val_logits,1) 
                 index_val_labels = tf.argmax(val_labels,1)
                 sess.run(val_op)
