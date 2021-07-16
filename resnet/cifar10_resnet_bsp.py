@@ -125,6 +125,10 @@ def train():
                 onehot_labels=labels)
             acc, acc_op = tf.metrics.accuracy(labels=tf.argmax(labels,1),predictions=tf.argmax(logits,1)) 
             val_acc, val_op = tf.metrics.accuracy(labels=tf.argmax(val_labels,1),predictions=tf.argmax(val_logits,1)) #returns validation accuracy and update op
+
+            index_val_logits = tf.argmax(val_logits,1) 
+            index_val_labels = tf.argmax(val_labels,1)
+
 #            logits = cifar10.inference(images, batch_size)
 
 #            loss = cifar10.loss(logits, labels, batch_size)
@@ -239,8 +243,6 @@ def train():
                 netio = psutil.net_io_counters(pernic=True)
                 net_usage = (netio[NETWORK_INTERFACE].bytes_sent + netio[NETWORK_INTERFACE].bytes_recv)/ (1024*1024)
                 
-                index_val_logits = tf.argmax(val_logits,1) 
-                index_val_labels = tf.argmax(val_labels,1)
                 sess.run(val_op)
                 val_accuracy = tf.Variable.read_value(val_acc)
                 print("Val logits: ",sess.run(index_val_logits))
