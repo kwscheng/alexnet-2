@@ -95,7 +95,7 @@ def train():
         tf.gfile.MakeDirs(FLAGS.train_dir)
 
     device_setter = tf.train.replica_device_setter(ps_tasks=len(ps_hosts))
-    val_images, val_labels = cifar10_input.get_validation_data(batch_size=32) #load validation images and labels, outside of device context manager
+    val_images, val_labels = cifar10_input.get_validation_data(batch_size=32) #how to prevent sharding of batches?
     with tf.device('/job:worker/task:%d' % FLAGS.task_id):
         with tf.device(device_setter):
             global_step = tf.Variable(0, trainable=False)
@@ -242,7 +242,10 @@ def train():
 
                 netio = psutil.net_io_counters(pernic=True)
                 net_usage = (netio[NETWORK_INTERFACE].bytes_sent + netio[NETWORK_INTERFACE].bytes_recv)/ (1024*1024)
-                
+
+                val_correct_prediction = tf.equal(tf.argmax(val_logits, 1), tf.argmax(val_labels, 1))
+                val_accuracy = tf.reduce_mean(tf.cast(val_correct_prediction, tf.float32))
+                print(val_accuracy)
                 sess.run(val_op)
                 val_accuracy = sess.run(val_acc)
                 print("Val logits: ",sess.run(index_val_logits))
