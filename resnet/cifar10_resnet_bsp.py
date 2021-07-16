@@ -129,7 +129,7 @@ def train():
             index_val_logits = tf.argmax(val_logits,1) 
             index_val_labels = tf.argmax(val_labels,1)
 
-            val_correct_prediction = tf.equal(tf.argmax(val_logits, 1), tf.argmax(val_labels, 1))
+            val_correct_prediction = tf.equal(tf.argmax(val_logits, 1), tf.argmax(val_labels, 1)) #alternative way to calculate val accuracy
             val_accuracy = tf.reduce_mean(tf.cast(val_correct_prediction, tf.float32))
                 
 #            logits = cifar10.inference(images, batch_size)
@@ -246,7 +246,7 @@ def train():
                 netio = psutil.net_io_counters(pernic=True)
                 net_usage = (netio[NETWORK_INTERFACE].bytes_sent + netio[NETWORK_INTERFACE].bytes_recv)/ (1024*1024)
 
-                print(val_accuracy)
+                print(sess.run(val_accuracy))
                 sess.run(val_op)
                 val_accuracy = sess.run(val_acc)
                 print("Val logits: ",sess.run(index_val_logits))
