@@ -211,6 +211,7 @@ def train():
                     csv_file.write(csv_output+"\n")
                     tf.logging.info((format_str % (datetime.now(), step, gs, loss_value, train_accuracy, 0.0, examples_per_sec, sec_per_batch, duration, cpu_use, memoryUse, net_usage)))
                     rpcClient.check_staleness(FLAGS.task_id, step)
+                    tf.logging.info("finished checking staleness")
 ##		    tf.logging.info("time: "+str(time.time()) + "; batch_size,"+str(batch_size_num)+"; last_batch_time," + str(last_batch_time) + '\n')
 
 def main(argv=None):
