@@ -5,6 +5,8 @@ from __future__ import print_function
 from datetime import datetime
 import os.path
 import time
+import psutil
+import random
 
 import numpy as np
 #from six.moves import xrange  # pylint: disable=redefined-builtin
@@ -38,6 +40,11 @@ _NUM_DATA_FILES = 5
 _WEIGHT_DECAY = 2e-4
 
 def train():
+
+    pid = os.getpid()
+    pid_use = psutil.Process(pid)
+    current_process = psutil.Process()
+
     ps_hosts = FLAGS.ps_hosts.split(',')
     worker_hosts = FLAGS.worker_hosts.split(',')
     print ('PS hosts are: %s' % ps_hosts)
@@ -53,7 +60,7 @@ def train():
 
     if FLAGS.job_name == 'ps':
         if FLAGS.task_id == 0:
-	    rpcServer = sspManager.create_rpc_server(ps_hosts[0].split(':')[0])
+            rpcServer = sspManager.create_rpc_server(ps_hosts[0].split(':')[0])
             rpcServer.serve()
         server.join()
 
@@ -75,22 +82,24 @@ def train():
             images, labels = cifar10.distorted_inputs(batch_size)
 	    re = tf.shape(images)[0]
 	    with tf.variable_scope('root', partitioner=tf.fixed_size_partitioner(len(ps_hosts), axis=0)):
-            	network = resnet_model.cifar10_resnet_v2_generator(FLAGS.resnet_size, _NUM_CLASSES)
-            inputs = tf.reshape(images, [-1, _HEIGHT, _WIDTH, _DEPTH])
+                network = resnet_model.cifar10_resnet_v2_generator(FLAGS.resnet_size, _NUM_CLASSES)
+        inputs = tf.reshape(images, [-1, _HEIGHT, _WIDTH, _DEPTH])
 #            labels = tf.reshape(labels, [-1, _NUM_CLASSES])
-            print(labels.get_shape())
-            labels = tf.one_hot(labels, 10, 1, 0)
-            print(labels.get_shape())
-            logits = network(inputs, True)
-            print(logits.get_shape())
-            cross_entropy = tf.losses.softmax_cross_entropy(
+        print(labels.get_shape())
+        labels = tf.one_hot(labels, 10, 1, 0)
+        print(labels.get_shape())
+        logits = network(inputs, True)
+        print(logits.get_shape())
+        cross_entropy = tf.losses.softmax_cross_entropy(
                 logits=logits, 
                 onehot_labels=labels)
 
-            loss = cross_entropy + _WEIGHT_DECAY * tf.add_n(
-                [tf.nn.l2_loss(v) for v in tf.trainable_variables()])
+        correct_prediction = tf.equal(tf.argmax(logits, 1), tf.argmax(labels, 1)) 
+        train_acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-	    train_op = cifar10.train(loss, global_step)
+        loss = cross_entropy + _WEIGHT_DECAY * tf.add_n(
+                [tf.nn.l2_loss(v) for v in tf.trainable_variables()])
+        train_op = cifar10.train(loss, global_step)
 
 #            lr = tf.train.exponential_decay(INITIAL_LEARNING_RATE,
 #                                            global_step,
@@ -121,7 +130,7 @@ def train():
 #            init_tokens_op = opt.get_init_tokens_op()
 
 #            saver = tf.train.Saver()
-            sv = tf.train.Supervisor(is_chief=is_chief,
+        sv = tf.train.Supervisor(is_chief=is_chief,
                                      logdir=FLAGS.train_dir,
 				     init_op=tf.group(tf.global_variables_initializer(), tf.local_variables_initializer()),
                                      summary_op=None,
@@ -131,73 +140,84 @@ def train():
 				     recovery_wait_secs=1,
                                      save_model_secs=60)
 
-            tf.logging.info('%s Supervisor' % datetime.now())
-   	    sess_config = tf.ConfigProto(allow_soft_placement=True,
+        tf.logging.info('%s Supervisor' % datetime.now())
+        sess_config = tf.ConfigProto(allow_soft_placement=True,
 					intra_op_parallelism_threads=1,
 					inter_op_parallelism_threads=1,
-   	                                 log_device_placement=FLAGS.log_device_placement)
-	    sess_config.gpu_options.allow_growth = True
+   	                log_device_placement=FLAGS.log_device_placement)
+        sess_config.gpu_options.allow_growth = True
 
    	    # Get a session.
-   	    sess = sv.prepare_or_wait_for_session(server.target, config=sess_config)
+        sess = sv.prepare_or_wait_for_session(server.target, config=sess_config)
 #	    sess.run(tf.global_variables_initializer())
 
             # Start the queue runners.
-            queue_runners = tf.get_collection(tf.GraphKeys.QUEUE_RUNNERS)
-            sv.start_queue_runners(sess, queue_runners)
+        queue_runners = tf.get_collection(tf.GraphKeys.QUEUE_RUNNERS)
+        sv.start_queue_runners(sess, queue_runners)
 #
 #            sv.start_queue_runners(sess, chief_queue_runners)
 #            sess.run(init_tokens_op)
 
-            """Train CIFAR-10 for a number of steps."""
+        """Train CIFAR-10 for a number of steps."""
+        
+        time0 = time.time()
+        batch_size_num = FLAGS.batch_size
+        csv_file = open("../csv/resnetssp_CPU_metrics_"+str(FLAGS.task_id)+".csv","w")
+        csv_file.write("time,datetime,step,global_step,loss,accuracy,val_accuracy,examples_sec,sec_batch,duration,cpu,mem,net_usage\n")
+        for step in range(FLAGS.max_steps):
 
-	    time0 = time.time()
-	    batch_size_num = FLAGS.batch_size
-            for step in range(FLAGS.max_steps):
+            start_time = time.time()
 
-                start_time = time.time()
+            if FLAGS.job_name == 'worker' and FLAGS.task_id == 0 :
+                        current_process.cpu_affinity([random.randint(0,3)])
+            elif FLAGS.job_name == 'worker' and FLAGS.task_id == 1 :
+                        current_process.cpu_affinity([random.randint(0,3)])
+            elif FLAGS.job_name == 'worker' and FLAGS.task_id == 2 :
+                        current_process.cpu_affinity([random.randint(0,3)])
+            elif FLAGS.job_name == 'worker' and FLAGS.task_id == 3 :
+                        current_process.cpu_affinity([random.randint(0,3)])
+            elif FLAGS.job_name == 'worker' and FLAGS.task_id == 4 :
+                        current_process.cpu_affinity([random.randint(0,3)])
 
-      		run_options = tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE)
-      		run_metadata = tf.RunMetadata()
 
-#                batch_size_num = updated_batch_size_num
-		if step <= 5:
-		    batch_size_num = FLAGS.batch_size
-		if step >= 0:
-		    batch_size_num = int(step/5)%512 + 1
-		    batch_size_num = 128
+            run_options = tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE)
+            run_metadata = tf.RunMetadata()
 
-                num_batches_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN / batch_size_num
-                decay_steps_num = int(num_batches_per_epoch * NUM_EPOCHS_PER_DECAY)
+            NETWORK_INTERFACE = 'lo'
+
+            netio = psutil.net_io_counters(pernic=True)
+            net_usage = (netio[NETWORK_INTERFACE].bytes_sent + netio[NETWORK_INTERFACE].bytes_recv)/ (1024*1024)
+
+            if step <= 5:
+                batch_size_num = FLAGS.batch_size
+            if step >= 0:
+                #batch_size_num = int(step/5)%512 + 1
+                batch_size_num = 128
+
+            num_batches_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN / batch_size_num
+            decay_steps_num = int(num_batches_per_epoch * NUM_EPOCHS_PER_DECAY)
 
 #                mgrads, images_, train_val, real, loss_value, gs = sess.run([grads, images, train_op, re, loss, global_step], feed_dict={batch_size: batch_size_num},  options=run_options, run_metadata=run_metadata)
-                _, loss_value, gs = sess.run([train_op, loss, global_step], feed_dict={batch_size: batch_size_num},  options=run_options, run_metadata=run_metadata)
-#                _, loss_value, gs = sess.run([train_op, loss, global_step], feed_dict={batch_size: batch_size_num})
-		b = time.time()
-#    		tl = timeline.Timeline(run_metadata.step_stats)
-#		last_batch_time = tl.get_local_step_duration('sync_token_q_Dequeue')
-#		thread = threading2.Thread(target=get_computation_time, name="get_computation_time",args=(run_metadata.step_stats,step,))
-#		thread.start()
-
-                c0 = time.time()
-
-#	        batch_size_num = rpcClient.update_batch_size(FLAGS.task_id, last_batch_time, available_cpu, available_memory, step, batch_size_num)
-#	        batch_size_num = rpcClient.update_batch_size(FLAGS.task_id, 0,0,0, step, batch_size_num)
+            _, loss_value, gs = sess.run([train_op, loss, global_step], feed_dict={batch_size: batch_size_num},  options=run_options, run_metadata=run_metadata)
+            train_accuracy = sess.run(train_acc)
+            cpu_use=current_process.cpu_percent(interval=None)
+            memoryUse = pid_use.memory_info()[0]/2.**20
 
 
+            if step % 1 == 0:
+                duration = time.time() - start_time
+                num_examples_per_step = batch_size_num
+                examples_per_sec = num_examples_per_step / duration
+                sec_per_batch = float(duration)
 
-                if step % 1 == 0:
-                    duration = time.time() - start_time
-                    num_examples_per_step = batch_size_num
-                    examples_per_sec = num_examples_per_step / duration
-                    sec_per_batch = float(duration)
-
-		    c = time.time()
 ##                    tf.logging.info("time statistics - batch_process_time: " + str( last_batch_time)  + " - train_time: " + str(b-start_time) + " - get_batch_time: " + str(c0-b) + " - get_bs_time:  " + str(c-c0) + " - accum_time: " + str(c-time0))
 
-                    format_str = ("time: " + str(time.time()) + '; %s: step %d (global_step %d), loss = %.2f (%.1f examples/sec; %.3f sec/batch) - batch_size: '+str(batch_size_num))
-                    tf.logging.info(format_str % (datetime.now(), step, gs, loss_value, examples_per_sec, sec_per_batch))
-		    rpcClient.check_staleness(FLAGS.task_id, step)
+                format_str = ("time: " + str(time.time()) +
+                            '; %s: step %d (global_step %d), loss = %.2f, accuracy = %.3f, val_accuracy = %.3f (%.1f examples/sec; %.3f sec/batch), duration = %.3f sec, cpu = %.3f, mem = %.3f MB, net usage= %.3f MB')
+                csv_output = (str(time.time())+',%s,%d,%d,%.2f,%.3f,%.3f,%.1f,%.3f,%.3f,%.3f,%.3f,%.3f')%(datetime.now(), step, gs, loss_value, train_accuracy, 0.0, examples_per_sec, sec_per_batch, duration, cpu_use, memoryUse, net_usage)
+                csv_file.write(csv_output+"\n")
+                tf.logging.info((format_str % (datetime.now(), step, gs, loss_value, train_accuracy, 0.0, examples_per_sec, sec_per_batch, duration, cpu_use, memoryUse, net_usage)))
+                rpcClient.check_staleness(FLAGS.task_id, step)
 ##		    tf.logging.info("time: "+str(time.time()) + "; batch_size,"+str(batch_size_num)+"; last_batch_time," + str(last_batch_time) + '\n')
 
 def main(argv=None):
