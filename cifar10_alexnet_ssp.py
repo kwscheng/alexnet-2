@@ -17,8 +17,6 @@ from nets import nets_factory
 import cifar10
 from tensorflow.python.client import timeline
 
-import threading2
-
 from ssp_manager import *
 
 FLAGS = tf.app.flags.FLAGS
