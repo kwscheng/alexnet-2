@@ -37,15 +37,15 @@ class SspManager():
 	    handler = sspHandler
 	    processor = CheckStaleness.Processor(handler)
 
-	    transport = TSocket.TServerSocket(host=ps_host_name, port=8000)
+	    transport = TSocket.TServerSocket(host=ps_host_name, port=20000)
 	    tfactory = TTransport.TBufferedTransportFactory()
 
 	    rpcServer = TNonblockingServer.TNonblockingServer(processor,transport, threads=self.thread_num)
-	    tf.logging.info("Listening on port 8000...")
+	    tf.logging.info("Listening on port 20000...")
 	    return rpcServer
 
     def create_rpc_client(self, ps_host_name):
-	    tsocket = TSocket.TSocket(ps_host_name, 8000)
+	    tsocket = TSocket.TSocket(ps_host_name, 20000)
 	    transport = TTransport.TFramedTransport(tsocket)
 	    protocol = TBinaryProtocol.TBinaryProtocol(transport)
 	    rpcClient = Client(protocol)
