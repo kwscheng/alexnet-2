@@ -122,12 +122,12 @@ def train():
 									 save_model_secs=60)
 
 			tf.logging.info('%s Supervisor' % datetime.now())
-   			sess_config = tf.ConfigProto(allow_soft_placement=True,
-   									 log_device_placement=FLAGS.log_device_placement)
+			sess_config = tf.ConfigProto(allow_soft_placement=True,
+									 log_device_placement=FLAGS.log_device_placement)
 			sess_config.gpu_options.allow_growth = True
 
    		# Get a session.
-   			sess = sv.prepare_or_wait_for_session(server.target, config=sess_config)
+			sess = sv.prepare_or_wait_for_session(server.target, config=sess_config)
 #	    sess.run(tf.global_variables_initializer())
 
 			# Start the queue runners.
@@ -162,8 +162,8 @@ def train():
 				elif FLAGS.job_name == 'worker' and FLAGS.task_id == 4 :
 					current_process.cpu_affinity([random.randint(0,3)])
 
-	  			run_options = tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE)
-	  			run_metadata = tf.RunMetadata()
+				run_options = tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE)
+				run_metadata = tf.RunMetadata()
 
 				NETWORK_INTERFACE = 'lo'
 
