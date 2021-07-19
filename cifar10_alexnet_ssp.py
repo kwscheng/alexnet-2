@@ -92,8 +92,8 @@ def train():
 			print(labels.get_shape())
 			labels = tf.one_hot(labels, 10, 1, 0)
 			print(labels.get_shape())
-  			network_fn = nets_factory.get_network_fn('alexnet_v2',num_classes=10) 
-  			(logits,_) = network_fn(inputs)
+			network_fn = nets_factory.get_network_fn('alexnet_v2',num_classes=10) 
+			(logits,_) = network_fn(inputs)
 			print(logits.get_shape())
 			cross_entropy = tf.losses.sigmoid_cross_entropy(
 				logits=logits, 
