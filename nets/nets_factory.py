@@ -100,7 +100,7 @@ arg_scopes_map = {'alexnet_v2': alexnet.alexnet_v2_arg_scope,
                  }
 
 
-def get_network_fn(name, num_classes, weight_decay=0.0, is_training=False):
+def get_network_fn(name, num_classes, weight_decay=0.0, is_training=True):
   """Returns a network_fn such as `logits, end_points = network_fn(images)`.
 
   Args:
