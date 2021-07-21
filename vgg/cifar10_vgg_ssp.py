@@ -107,8 +107,6 @@ def train():
 				
 				train_op = cifar10.train(loss, global_step)
 				
-				chief_queue_runners = [train_op.get_chief_queue_runner()]
-				init_tokens_op = train_op.get_init_tokens_op()
 
 				sv = tf.train.Supervisor(is_chief=is_chief,
 										logdir=FLAGS.train_dir,
@@ -133,8 +131,6 @@ def train():
 				queue_runners = tf.get_collection(tf.GraphKeys.QUEUE_RUNNERS)
 				sv.start_queue_runners(sess, queue_runners)
 
-				sv.start_queue_runners(sess, chief_queue_runners)
-				sess.run(init_tokens_op)
 
 	#            sv.start_queue_runners(sess, chief_queue_runners)
 	#            sess.run(init_tokens_op)
