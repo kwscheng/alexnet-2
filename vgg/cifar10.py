@@ -353,7 +353,7 @@ def train(total_loss, global_step):
   decay_steps = int(num_batches_per_epoch * NUM_EPOCHS_PER_DECAY)
 
   # Decay the learning rate exponentially based on the number of steps.
-  lr = tf.train.exponential_decay(INITIAL_LEARNING_RATE * 5,
+  lr = tf.train.exponential_decay(INITIAL_LEARNING_RATE,
                                   global_step,
                                   decay_steps,
                                   LEARNING_RATE_DECAY_FACTOR,
@@ -362,14 +362,10 @@ def train(total_loss, global_step):
 
   # Generate moving averages of all losses and associated summaries.
   loss_averages_op = _add_loss_summaries(total_loss)
-  
 
   # Compute gradients.
   with tf.control_dependencies([loss_averages_op]):
     opt = tf.train.GradientDescentOptimizer(lr)
-    opt = tf.train.SyncReplicasOptimizer(opt,
-                replicas_to_aggregate=5,
-                total_num_replicas=5)
     grads = opt.compute_gradients(total_loss)
 
   # Apply gradients.
@@ -386,8 +382,7 @@ def train(total_loss, global_step):
 
   # Track the moving averages of all trainable variables.
   variable_averages = tf.train.ExponentialMovingAverage(
-      MOVING_AVERAGE_DECAY, 
-      global_step)
+      MOVING_AVERAGE_DECAY, global_step)
   variables_averages_op = variable_averages.apply(tf.trainable_variables())
 
   with tf.control_dependencies([apply_gradient_op, variables_averages_op]):
