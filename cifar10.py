@@ -371,7 +371,7 @@ def train(total_loss, global_step):
       MOVING_AVERAGE_DECAY, 
       global_step)
     variables_to_average = (tf.trainable_variables() + tf.moving_average_variables())
-    variables_averages_op = variable_averages.apply(tf.trainable_variables())
+    #variables_averages_op = variable_averages.apply(tf.trainable_variables())
     opt = tf.train.SyncReplicasOptimizer(opt,
                 replicas_to_aggregate=5,
                 total_num_replicas=5,
@@ -394,7 +394,7 @@ def train(total_loss, global_step):
   # Track the moving averages of all trainable variables.
   
 
-  with tf.control_dependencies([apply_gradient_op, variables_averages_op]):
+  with tf.control_dependencies([apply_gradient_op]):
     train_op = tf.no_op(name='train')
 
   return train_op
