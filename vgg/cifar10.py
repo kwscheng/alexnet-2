@@ -370,13 +370,10 @@ def train(total_loss, global_step):
     variable_averages = tf.train.ExponentialMovingAverage(
       MOVING_AVERAGE_DECAY, 
       global_step)
-    variables_to_average = (tf.trainable_variables() + tf.moving_average_variables())
     variables_averages_op = variable_averages.apply(tf.trainable_variables())
     opt = tf.train.SyncReplicasOptimizer(opt,
                 replicas_to_aggregate=5,
-                total_num_replicas=5,
-                variable_averages=variable_averages,
-                variables_to_average=variables_to_average)
+                total_num_replicas=5)
     grads = opt.compute_gradients(total_loss)
 
   # Apply gradients.
