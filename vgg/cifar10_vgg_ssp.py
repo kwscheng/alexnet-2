@@ -143,7 +143,7 @@ def train():
 				batch_size_num = FLAGS.batch_size
 				loss_list = []
 				threshold = 0.95
-				csv_file = open("./csv/vggssp_CPU_metrics_"+str(FLAGS.task_id)+".csv","w")
+				csv_file = open("../csv/vggssp_CPU_metrics_"+str(FLAGS.task_id)+".csv","w")
 				csv_file.write("time,datetime,step,global_step,loss,accuracy,val_accuracy,examples_sec,sec_batch,duration,cpu,mem,net_usage\n")
 				for step in range(FLAGS.max_steps):
 
