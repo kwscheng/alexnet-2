@@ -142,13 +142,13 @@ vgg_a.default_image_size = 224
 
 
 def vgg_16(inputs,
-           num_classes=1000,
+           num_classes=10,
            is_training=True,
            dropout_keep_prob=0.5,
            spatial_squeeze=True,
            scope='vgg_16',
            fc_conv_padding='VALID',
-           global_pool=False):
+           global_pool=True):
   """Oxford Net VGG 16-Layers version D Example.
 
   Note: All the fully_connected layers have been transformed to conv2d layers.
