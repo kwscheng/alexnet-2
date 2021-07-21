@@ -100,7 +100,7 @@ def train():
 #            logits = cifar10.inference(images, batch_size)
 
 #            loss = cifar10.loss(logits, labels, batch_size)
-
+				acc, acc_op = tf.metrics.accuracy(labels=tf.argmax(labels,1),predictions=tf.argmax(logits,1)) 
 				correct_prediction = tf.equal(tf.argmax(logits, 1), tf.argmax(labels, 1)) 
 				train_acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
@@ -179,7 +179,9 @@ def train():
 
 	#                mgrads, images_, train_val, real, loss_value, gs = sess.run([grads, images, train_op, re, loss, global_step], feed_dict={batch_size: batch_size_num},  options=run_options, run_metadata=run_metadata)
 					_, loss_value, gs = sess.run([train_op, loss, global_step], feed_dict={batch_size: batch_size_num},  options=run_options, run_metadata=run_metadata)
-					train_accuracy = sess.run(train_acc, feed_dict={batch_size: batch_size_num})
+					#train_accuracy = sess.run(train_acc, feed_dict={batch_size: batch_size_num})
+					sess.run(acc_op, feed_dict={batch_size: batch_size_num})
+					train_accuracy = sess.run(acc)
 					cpu_use=current_process.cpu_percent(interval=None)
 					memoryUse = pid_use.memory_info()[0]/2.**20
 					
