@@ -124,13 +124,13 @@ def train():
                 logits=logits, 
                 onehot_labels=labels)
             acc, acc_op = tf.metrics.accuracy(labels=tf.argmax(labels,1),predictions=tf.argmax(logits,1)) 
-            val_acc, val_op = tf.metrics.accuracy(labels=tf.argmax(val_labels,1),predictions=tf.argmax(val_logits,1)) #returns validation accuracy and update op
+            #val_acc, val_op = tf.metrics.accuracy(labels=tf.argmax(val_labels,1),predictions=tf.argmax(val_logits,1)) #returns validation accuracy and update op
 
             index_val_logits = tf.argmax(val_logits,1) 
             index_val_labels = tf.argmax(val_labels,1)
 
-            val_correct_prediction = tf.equal(tf.argmax(val_logits, 1), tf.argmax(val_labels, 1)) #alternative way to calculate val accuracy
-            val_accuracy = tf.reduce_mean(tf.cast(val_correct_prediction, tf.float32))
+            #val_correct_prediction = tf.equal(tf.argmax(val_logits, 1), tf.argmax(val_labels, 1)) #alternative way to calculate val accuracy
+            #val_accuracy = tf.reduce_mean(tf.cast(val_correct_prediction, tf.float32))
                 
 #            logits = cifar10.inference(images, batch_size)
 
@@ -174,6 +174,8 @@ def train():
 
             with tf.control_dependencies([apply_gradients_op]):
                 train_op = tf.identity(loss, name='train_op')
+                val_correct_prediction = tf.equal(tf.argmax(val_logits, 1), tf.argmax(val_labels, 1)) #alternative way to calculate val accuracy
+                val_accuracy = tf.reduce_mean(tf.cast(val_correct_prediction, tf.float32))
 
             chief_queue_runners = [opt.get_chief_queue_runner()]
             init_tokens_op = opt.get_init_tokens_op()
@@ -246,9 +248,9 @@ def train():
                 netio = psutil.net_io_counters(pernic=True)
                 net_usage = (netio[NETWORK_INTERFACE].bytes_sent + netio[NETWORK_INTERFACE].bytes_recv)/ (1024*1024)
 
-                print(sess.run(val_accuracy))
-                sess.run(val_op)
-                val_accuracy = sess.run(val_acc)
+                val = sess.run(val_accuracy)
+                #sess.run(val_op)
+                #val_accuracy = sess.run(val_acc)
                 print("Val logits: ",sess.run(index_val_logits))
                 print("Val labels: ", sess.run(index_val_labels))
 
@@ -295,9 +297,9 @@ def train():
 
                     format_str = ("time: " + str(time.time()) +
                             '; %s: step %d (global_step %d), loss = %.2f, accuracy = %.3f, val_accuracy = %.3f (%.1f examples/sec; %.3f sec/batch), duration = %.3f sec, cpu = %.3f, mem = %.3f MB, net usage= %.3f MB')
-                    csv_output = (str(time.time())+',%s,%d,%d,%.2f,%.3f,%.3f,%.1f,%.3f,%.3f,%.3f,%.3f,%.3f')%(datetime.now(), step, gs, loss_value, accuracy, val_accuracy, examples_per_sec, sec_per_batch, duration, cpu_use, memoryUse, net_usage)
+                    csv_output = (str(time.time())+',%s,%d,%d,%.2f,%.3f,%.3f,%.1f,%.3f,%.3f,%.3f,%.3f,%.3f')%(datetime.now(), step, gs, loss_value, accuracy, val, examples_per_sec, sec_per_batch, duration, cpu_use, memoryUse, net_usage)
                     csv_file.write(csv_output+"\n")         
-                    tf.logging.info((format_str % (datetime.now(), step, gs, loss_value, accuracy, val_accuracy, examples_per_sec, sec_per_batch, duration, cpu_use, memoryUse, net_usage))+", current cpu: "+str(current_cpu))
+                    tf.logging.info((format_str % (datetime.now(), step, gs, loss_value, accuracy, val, examples_per_sec, sec_per_batch, duration, cpu_use, memoryUse, net_usage))+", current cpu: "+str(current_cpu))
     ##		    tf.logging.info("time: "+str(time.time()) + "; batch_size,"+str(batch_size_num)+"; last_batch_time," + str(last_batch_time) + '\n')
             csv_file.close()
 
