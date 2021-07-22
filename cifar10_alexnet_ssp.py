@@ -110,7 +110,7 @@ def train():
 				#START	
 				#train_op = cifar10.train(loss, global_step)
 				num_batches_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN / FLAGS.batch_size
-  				decay_steps = int(num_batches_per_epoch * NUM_EPOCHS_PER_DECAY)
+				decay_steps = int(num_batches_per_epoch * NUM_EPOCHS_PER_DECAY)
 				lr = tf.train.exponential_decay(INITIAL_LEARNING_RATE,
 								  global_step,
 								  decay_steps,
@@ -123,8 +123,8 @@ def train():
 				
 				apply_gradient_op = opt.apply_gradients(grads, global_step=global_step)
 				variable_averages = tf.train.ExponentialMovingAverage(
-	  				MOVING_AVERAGE_DECAY, global_step)
-  				variables_averages_op = variable_averages.apply(tf.trainable_variables())
+					MOVING_AVERAGE_DECAY, global_step)
+				variables_averages_op = variable_averages.apply(tf.trainable_variables())
 				#END
 				with tf.control_dependencies([apply_gradient_op, variables_averages_op]):
 					correct_prediction = tf.equal(tf.argmax(logits, 1), tf.argmax(labels, 1)) 
