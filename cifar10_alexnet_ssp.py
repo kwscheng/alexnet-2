@@ -128,7 +128,7 @@ def train():
 					MOVING_AVERAGE_DECAY, global_step)
 				variables_averages_op = variable_averages.apply(tf.trainable_variables())
 				#END
-				with tf.control_dependencies([apply_gradient_op, variables_averages_op, logits]):
+				with tf.control_dependencies([apply_gradient_op, variables_averages_op, images, labels, logits]):
 					correct_prediction = tf.equal(tf.argmax(logits, 1), tf.argmax(labels, 1)) 
 					train_acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 					train_op = tf.no_op(name='train')
