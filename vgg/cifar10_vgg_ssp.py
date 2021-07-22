@@ -185,8 +185,8 @@ def train():
 
 	#                mgrads, images_, train_val, real, loss_value, gs = sess.run([grads, images, train_op, re, loss, global_step], feed_dict={batch_size: batch_size_num},  options=run_options, run_metadata=run_metadata)
 					_, loss_value, gs = sess.run([train_op, loss, global_step], feed_dict={batch_size: batch_size_num},  options=run_options, run_metadata=run_metadata)
-					print("Val logits: ",sess.run(index_logits))
-					print("Val labels: ", sess.run(index_labels))
+					print("Val logits: ",sess.run(index_logits, feed_dict={batch_size: batch_size_num}))
+					print("Val labels: ", sess.run(index_labels, feed_dict={batch_size: batch_size_num}))
 					train_accuracy = sess.run(train_acc, feed_dict={batch_size: batch_size_num})
 					cpu_use=current_process.cpu_percent(interval=None)
 					memoryUse = pid_use.memory_info()[0]/2.**20
