@@ -184,7 +184,7 @@ def train():
 					_, loss_value, gs = sess.run([train_op, loss, global_step], feed_dict={batch_size: batch_size_num},  options=run_options, run_metadata=run_metadata)
 					#train_accuracy = sess.run(train_acc, feed_dict={batch_size: batch_size_num})
 					#sess.run(acc_op, feed_dict={batch_size: batch_size_num})
-					train_accuracy = sess.run(train_acc)
+					train_accuracy = sess.run(train_acc, feed_dict={batch_size: batch_size_num})
 					cpu_use=current_process.cpu_percent(interval=None)
 					memoryUse = pid_use.memory_info()[0]/2.**20
 					
