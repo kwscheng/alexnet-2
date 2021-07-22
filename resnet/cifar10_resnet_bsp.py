@@ -248,7 +248,7 @@ def train():
                 netio = psutil.net_io_counters(pernic=True)
                 net_usage = (netio[NETWORK_INTERFACE].bytes_sent + netio[NETWORK_INTERFACE].bytes_recv)/ (1024*1024)
 
-                val = sess.run(val_accuracy)
+                val = sess.run(val_accuracy,feed_dict={batch_size: batch_size_num})
                 #sess.run(val_op)
                 #val_accuracy = sess.run(val_acc)
                 print("Val logits: ",sess.run(index_val_logits))
