@@ -93,7 +93,7 @@ def train():
 				print(logits.get_shape())
 
 				index_logits = tf.argmax(logits,1) 
-            	index_labels = tf.argmax(labels,1)
+				index_labels = tf.argmax(labels,1)
 
 				correct_prediction = tf.equal(tf.argmax(logits, 1), tf.argmax(labels, 1)) 
 				train_acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
