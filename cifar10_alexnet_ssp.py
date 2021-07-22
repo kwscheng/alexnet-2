@@ -100,13 +100,16 @@ def train():
 #            logits = cifar10.inference(images, batch_size)
 
 #            loss = cifar10.loss(logits, labels, batch_size)
-				acc, acc_op = tf.metrics.accuracy(labels=tf.argmax(labels,1),predictions=tf.argmax(logits,1)) 
-				correct_prediction = tf.equal(tf.argmax(logits, 1), tf.argmax(labels, 1)) 
-				train_acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+				#acc, acc_op = tf.metrics.accuracy(labels=tf.argmax(labels,1),predictions=tf.argmax(logits,1)) 
+				#correct_prediction = tf.equal(tf.argmax(logits, 1), tf.argmax(labels, 1)) 
+				#train_acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 				loss = cross_entropy + _WEIGHT_DECAY * tf.add_n(
 					[tf.nn.l2_loss(v) for v in tf.trainable_variables()])
 				train_op = cifar10.train(loss, global_step)
+				with tf.control_dependencies([logits]):
+					correct_prediction = tf.equal(tf.argmax(logits, 1), tf.argmax(labels, 1)) 
+					train_acc = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 				# Decay the learning rate exponentially based on the number of steps.
 				sv = tf.train.Supervisor(is_chief=is_chief,
@@ -180,8 +183,8 @@ def train():
 	#                mgrads, images_, train_val, real, loss_value, gs = sess.run([grads, images, train_op, re, loss, global_step], feed_dict={batch_size: batch_size_num},  options=run_options, run_metadata=run_metadata)
 					_, loss_value, gs = sess.run([train_op, loss, global_step], feed_dict={batch_size: batch_size_num},  options=run_options, run_metadata=run_metadata)
 					#train_accuracy = sess.run(train_acc, feed_dict={batch_size: batch_size_num})
-					sess.run(acc_op, feed_dict={batch_size: batch_size_num})
-					train_accuracy = sess.run(acc)
+					#sess.run(acc_op, feed_dict={batch_size: batch_size_num})
+					train_accuracy = sess.run(train_acc)
 					cpu_use=current_process.cpu_percent(interval=None)
 					memoryUse = pid_use.memory_info()[0]/2.**20
 					
