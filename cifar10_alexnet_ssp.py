@@ -119,7 +119,7 @@ def train():
 				loss_averages_op = cifar10._add_loss_summaries(loss)
 				with tf.control_dependencies([loss_averages_op]):
 					opt = tf.train.GradientDescentOptimizer(lr)
-					grads = opt.compute_gradients(total_loss)
+					grads = opt.compute_gradients(loss)
 				
 				apply_gradient_op = opt.apply_gradients(grads, global_step=global_step)
 				variable_averages = tf.train.ExponentialMovingAverage(
