@@ -224,7 +224,7 @@ def train():
 					
 					
 					
-					
+					train_accuracy = sess.run(train_acc, feed_dict={batch_size: batch_size_num})
 
 					c0 = time.time()
 					if step % 1 == 0:
@@ -238,10 +238,10 @@ def train():
 
 						format_str = ("time: " + str(time.time()) +
 						 '; %s: step %d (global_step %d), loss = %.2f, accuracy = %.3f (%.1f examples/sec; %.3f sec/batch), duration = %.3f sec, cpu = %.3f, mem = %.3f MB, net usage= %.3f MB')
-						csv_output = (str(time.time())+',%s,%d,%d,%.2f,%.3f,%.1f,%.3f,%.3f,%.3f,%.3f,%.3f')%(datetime.now(), step, gs, loss_value,train_acc, examples_per_sec, sec_per_batch, duration, cpu_use, memoryUse, net_usage)
+						csv_output = (str(time.time())+',%s,%d,%d,%.2f,%.3f,%.1f,%.3f,%.3f,%.3f,%.3f,%.3f')%(datetime.now(), step, gs, loss_value, train_accuracy, examples_per_sec, sec_per_batch, duration, cpu_use, memoryUse, net_usage)
 						#csv_file = open("alexnet_CPU_metrics_"+str(FLAGS.task_id),"w")
 						csv_file.write(csv_output+"\n")
-						tf.logging.info(format_str % (datetime.now(), step, gs, loss_value,train, examples_per_sec, sec_per_batch, duration, cpu_use, memoryUse, net_usage))
+						tf.logging.info(format_str % (datetime.now(), step, gs, loss_value, train_accuracy, examples_per_sec, sec_per_batch, duration, cpu_use, memoryUse, net_usage))
 				csv_file.close()
 
 			"""Train CIFAR-10 for a number of steps."""
