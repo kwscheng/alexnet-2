@@ -153,7 +153,7 @@ def distorted_inputs(job_name, task_id, data_dir, batch_size):
     images: Images. 4D tensor of [batch_size, IMAGE_SIZE, IMAGE_SIZE, 3] size.
     labels: Labels. 1D tensor of [batch_size] size.
   """
-  if job_name == 'worker' and task_id == 0:
+  """if job_name == 'worker' and task_id == 0:
     filenames = [os.path.join(data_dir, 'data_batch_%d.bin' % i)
                for i in xrange(1, 2)]
   elif job_name == 'worker' and task_id == 1:
@@ -167,10 +167,10 @@ def distorted_inputs(job_name, task_id, data_dir, batch_size):
                for i in xrange(4, 5)]
   elif job_name == 'worker' and task_id == 4:
     filenames = [os.path.join(data_dir, 'data_batch_%d.bin' % i)
-               for i in xrange(5, 6)]
+               for i in xrange(5, 6)]"""
 
-  # filenames = [os.path.join(data_dir, 'data_batch_%d.bin' % i)
-               # for i in xrange(1, 3)]
+  filenames = [os.path.join(data_dir, 'data_batch_%d.bin' % i)
+               for i in xrange(1, 6)]
   for f in filenames:
     if not tf.gfile.Exists(f):
       raise ValueError('Failed to find file: ' + f)
