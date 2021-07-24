@@ -107,10 +107,10 @@ def train():
 	#            loss = cifar10.loss(logits, labels, batch_size)
 				loss = cross_entropy + _WEIGHT_DECAY * tf.add_n(
 					[tf.nn.l2_loss(v) for v in tf.trainable_variables()])
-				
+				#START
 				train_op = cifar10.train(loss, global_step)
 				
-
+				#FIN
 				sv = tf.train.Supervisor(is_chief=is_chief,
 										logdir=FLAGS.train_dir,
 						init_op=tf.group(tf.global_variables_initializer(), tf.local_variables_initializer()),
@@ -185,8 +185,8 @@ def train():
 
 	#                mgrads, images_, train_val, real, loss_value, gs = sess.run([grads, images, train_op, re, loss, global_step], feed_dict={batch_size: batch_size_num},  options=run_options, run_metadata=run_metadata)
 					_, loss_value, gs = sess.run([train_op, loss, global_step], feed_dict={batch_size: batch_size_num},  options=run_options, run_metadata=run_metadata)
-					print("logits: ",sess.run(index_logits, feed_dict={batch_size: batch_size_num}))
-					print("labels: ", sess.run(index_labels, feed_dict={batch_size: batch_size_num}))
+					#print("logits: ",sess.run(index_logits, feed_dict={batch_size: batch_size_num}))
+					#print("labels: ", sess.run(index_labels, feed_dict={batch_size: batch_size_num}))
 					train_accuracy = sess.run(train_acc, feed_dict={batch_size: batch_size_num})
 					cpu_use=current_process.cpu_percent(interval=None)
 					memoryUse = pid_use.memory_info()[0]/2.**20

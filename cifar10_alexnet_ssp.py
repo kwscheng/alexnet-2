@@ -204,8 +204,8 @@ def train():
 
 	#                mgrads, images_, train_val, real, loss_value, gs = sess.run([grads, images, train_op, re, loss, global_step], feed_dict={batch_size: batch_size_num},  options=run_options, run_metadata=run_metadata)
 					_, loss_value, gs = sess.run([train_op, loss, global_step], feed_dict={batch_size: batch_size_num},  options=run_options, run_metadata=run_metadata)
-					print("logits: ",sess.run(index_logits, feed_dict={batch_size: batch_size_num}))
-					print("labels: ", sess.run(index_labels, feed_dict={batch_size: batch_size_num}))
+					#print("logits: ",sess.run(index_logits, feed_dict={batch_size: batch_size_num}))
+					#print("labels: ", sess.run(index_labels, feed_dict={batch_size: batch_size_num}))
 					#train_accuracy = sess.run(train_acc, feed_dict={batch_size: batch_size_num})
 					#sess.run(acc_op, feed_dict={batch_size: batch_size_num})
 					train_accuracy = sess.run(train_acc, feed_dict={batch_size: batch_size_num})
