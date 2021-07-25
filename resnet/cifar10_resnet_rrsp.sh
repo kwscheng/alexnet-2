@@ -99,22 +99,22 @@ def train():
 
 			sv = tf.train.Supervisor(is_chief=is_chief,
 									 logdir=FLAGS.train_dir,
-					 init_op=tf.group(tf.global_variables_initializer(), tf.local_variables_initializer()),
+					init_op=tf.group(tf.global_variables_initializer(), tf.local_variables_initializer()),
 									 summary_op=None,
 									 global_step=global_step,
 									 saver=None,
-					 recovery_wait_secs=1,
+					recovery_wait_secs=1,
 									 save_model_secs=60)
 
 			tf.logging.info('%s Supervisor' % datetime.now())
-   			sess_config = tf.ConfigProto(allow_soft_placement=True,
+					sess_config = tf.ConfigProto(allow_soft_placement=True,
 					intra_op_parallelism_threads=1,
 					inter_op_parallelism_threads=1,
-   									 log_device_placement=FLAGS.log_device_placement)
+									 log_device_placement=FLAGS.log_device_placement)
 			sess_config.gpu_options.allow_growth = True
 
    		# Get a session.
-   			sess = sv.prepare_or_wait_for_session(server.target, config=sess_config)
+			sess = sv.prepare_or_wait_for_session(server.target, config=sess_config)
 
 			queue_runners = tf.get_collection(tf.GraphKeys.QUEUE_RUNNERS)
 			sv.start_queue_runners(sess, queue_runners)
@@ -132,8 +132,8 @@ def train():
 				if FLAGS.job_name == 'worker':
 						current_process.cpu_affinity([random.randint(0,5)])
 
-	  			run_options = tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE)
-	  			run_metadata = tf.RunMetadata()
+				run_options = tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE)
+				run_metadata = tf.RunMetadata()
 
 				NETWORK_INTERFACE = 'lo'
 
