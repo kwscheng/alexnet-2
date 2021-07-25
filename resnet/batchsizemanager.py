@@ -30,7 +30,7 @@ class BatchSizeHandler():
 		self.iteration_start_times = [[] for i in range(self.num)]
 		self.release_times = [[0] for i in range(self.num)]
 		self.gap_time = 0.0
-		self.latest_chief_start_time = sys.maxint
+		self.latest_chief_start_time = sys.maxsize
 		self.max_average_iteration_time = 0
 		self.block_times = [[] for i in range(self.num)]
 		self.next_task_id = 0
