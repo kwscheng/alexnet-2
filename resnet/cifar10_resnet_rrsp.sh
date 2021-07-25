@@ -60,7 +60,7 @@ def train():
 
 	if FLAGS.job_name == 'ps':
 		if FLAGS.task_id == 0:
-		rpcServer = batchSizeManager.create_rpc_server(ps_hosts[0].split(':')[0])
+			rpcServer = batchSizeManager.create_rpc_server(ps_hosts[0].split(':')[0])
 			rpcServer.serve()
 		server.join()
 
