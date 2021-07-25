@@ -172,7 +172,7 @@ def train():
 
             apply_gradients_op = opt.apply_gradients(grads, global_step=global_step)
 
-            with tf.control_dependencies([apply_gradients_op]):
+            with tf.control_dependencies([apply_gradients_op, val_logits, val_labels]):
                 train_op = tf.identity(loss, name='train_op')
                 val_correct_prediction = tf.equal(tf.argmax(val_logits, 1), tf.argmax(val_labels, 1)) #alternative way to calculate val accuracy
                 val_accuracy = tf.reduce_mean(tf.cast(val_correct_prediction, tf.float32))
@@ -251,8 +251,8 @@ def train():
                 val = sess.run(val_accuracy,feed_dict={batch_size: batch_size_num})
                 #sess.run(val_op)
                 #val_accuracy = sess.run(val_acc)
-                print("Val logits: ",sess.run(index_val_logits))
-                print("Val labels: ", sess.run(index_val_labels))
+                #print("Val logits: ",sess.run(index_val_logits))
+                #print("Val labels: ", sess.run(index_val_labels))
 
     #                batch_size_num = updated_batch_size_num
                 if step <= 5:
