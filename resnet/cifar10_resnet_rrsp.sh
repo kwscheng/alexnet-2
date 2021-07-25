@@ -107,7 +107,7 @@ def train():
 									 save_model_secs=60)
 
 			tf.logging.info('%s Supervisor' % datetime.now())
-					sess_config = tf.ConfigProto(allow_soft_placement=True,
+			sess_config = tf.ConfigProto(allow_soft_placement=True,
 					intra_op_parallelism_threads=1,
 					inter_op_parallelism_threads=1,
 									 log_device_placement=FLAGS.log_device_placement)
