@@ -155,7 +155,7 @@ def train():
 					cpu_use=current_process.cpu_percent(interval=None)
 					memoryUse = pid_use.memory_info()[0]/2.**20
 			# call rrsp mechanism to coordinate the synchronization order and update the batch size
-					#batch_size_num = rpcClient.update_batch_size(FLAGS.task_id, 0,0,0, step, batch_size_num)
+					batch_size_num = rpcClient.update_batch_size(FLAGS.task_id, 0,0,0, step, batch_size_num)
 
 					train_accuracy = sess.run(train_acc, feed_dict={batch_size: batch_size_num})
 

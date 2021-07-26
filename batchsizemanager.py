@@ -22,7 +22,7 @@ import math
 
 import sys
 
-class BatchSizeHandler():
+class BatchSizeHandler():  # handles all of the calls made to the "update batch" service. All the service methods must be represented in the Handler class
 	def __init__(self, initial_batch_size, num_of_replicas, thread_num):
 		self.num = num_of_replicas
 		self.total_batch_size = initial_batch_size * num_of_replicas
@@ -79,11 +79,11 @@ class BatchSizeManager:
 		processor = UpdateBatchSize.Processor(handler)
 		#transport = TSocket.TServerSocket(ps_host_name, 8000)
 		transport = TSocket.TServerSocket(host=ps_host_name, port=8000)
-		tfactory = TTransport.TBufferedTransportFactory()
-#        tfactory = TTransport.TFramedTransportFactory()
+		#tfactory = TTransport.TBufferedTransportFactory()
+		tfactory = TTransport.TFramedTransportFactory()
 		pfactory = TBinaryProtocol.TBinaryProtocolFactory()
 		#rpcServer = TServer.TSimpleServer(processor,transport, tfactory, pfactory)
-		rpcServer = TNonblockingServer.TNonblockingServer(processor,transport, threads=self.thread_num)
+		rpcServer = TNonblockingServer.TNonblockingServer(processor,transport, tfactory, pfactory, threads=self.thread_num)
 		tf.logging.info("Listening on port 8000...")	
 		return rpcServer
 
