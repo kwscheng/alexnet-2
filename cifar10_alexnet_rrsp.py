@@ -86,7 +86,7 @@ def train():
 				(logits,_) = network_fn(inputs)
 				cross_entropy = tf.losses.sigmoid_cross_entropy(
 				logits=logits, 
-				onehot_labels=labels)
+				multi_class_labels=labels)
 
 
 
