@@ -68,13 +68,14 @@ class Client(Iface):
 
   def recv_update_batch_size(self):
     print("begin recv update")
-    (fname, mtype, rseqid) = self._iprot.readMessageBegin()
+    (fname, mtype, rseqid) = self._iprot.readMessageBegin() #problem, buff = self.handle.recv(sz)
+    print("line 72 - UpdateBatchSize.py")
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
       x.read(self._iprot)
       self._iprot.readMessageEnd()
       raise x
-    print("line 77 - UpdateBatchSize.py")
+    print("line 78 - UpdateBatchSize.py") #never reached
     result = update_batch_size_result()
     result.read(self._iprot)
     self._iprot.readMessageEnd()
