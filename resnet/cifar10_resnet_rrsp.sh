@@ -129,9 +129,6 @@ def train():
 
 				start_time = time.time()
 
-				if FLAGS.job_name == 'worker':
-						current_process.cpu_affinity([random.randint(0,5)])
-
 				run_options = tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE)
 				run_metadata = tf.RunMetadata()
 
@@ -142,13 +139,15 @@ def train():
 
 				num_batches_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN / batch_size_num
 				decay_steps_num = int(num_batches_per_epoch * NUM_EPOCHS_PER_DECAY)
-
+				print("line 142")
 				_, loss_value, gs = sess.run([train_op, loss, global_step], feed_dict={batch_size: batch_size_num},  options=run_options, run_metadata=run_metadata)
+				print("line 144")
 				train_accuracy = sess.run(train_acc, feed_dict={batch_size: batch_size_num})
 				cpu_use=current_process.cpu_percent(interval=None)
 				memoryUse = pid_use.memory_info()[0]/2.**20
 		# call rrsp mechanism to coordinate the synchronization order and update the batch size
 				batch_size_num = rpcClient.update_batch_size(FLAGS.task_id, 0,0,0, step, batch_size_num)
+				print("line 150")
 
 				if step % 1 == 0:
 					duration = time.time() - start_time
