@@ -171,7 +171,7 @@ def train():
 
 						csv_file.write(csv_output+"\n")
 						tf.logging.info(format_str % (datetime.now(), step, gs, loss_value, train_accuracy, examples_per_sec, sec_per_batch, duration, cpu_use, memoryUse, net_usage))
-						batch_size_num = rpcClient.update_batch_size(FLAGS.task_id, duration,multiprocessing.cpu_count(),mem.available, step, batch_size_num) #task_index, last_batch_time, avail_cpu, avail_memory, step, batch_size
+						batch_size_num = rpcClient.update_batch_size(FLAGS.task_id, int(duration),int(multiprocessing.cpu_count()),int(mem.available), step, batch_size_num) #task_index, last_batch_time, avail_cpu, avail_memory, step, batch_size
 				csv_file.close()
 def main(argv=None):
 	cifar10.maybe_download_and_extract()
