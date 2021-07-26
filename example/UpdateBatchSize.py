@@ -31,14 +31,14 @@ class Iface:
     pass
 
 
-class Client(Iface):
-  def __init__(self, iprot, oprot=None):
+class Client(Iface): 
+  def __init__(self, iprot, oprot=None): #iprot = protocol (input) and oprot probably = protocol (output)
     self._iprot = self._oprot = iprot
     if oprot is not None:
       self._oprot = oprot
     self._seqid = 0
 
-  def update_batch_size(self, task_index, last_batch_time, avail_cpu, avail_memory, step, batch_size):
+  def update_batch_size(self, task_index, last_batch_time, avail_cpu, avail_memory, step, batch_size): #called by rrsp
     """
     Parameters:
      - task_index
@@ -49,9 +49,10 @@ class Client(Iface):
      - batch_size
     """
     self.send_update_batch_size(task_index, last_batch_time, avail_cpu, avail_memory, step, batch_size)
-    return self.recv_update_batch_size()
+    return self.recv_update_batch_size() #last trace before freezing
 
   def send_update_batch_size(self, task_index, last_batch_time, avail_cpu, avail_memory, step, batch_size):
+    print("begin send update")
     self._oprot.writeMessageBegin('update_batch_size', TMessageType.CALL, self._seqid)
     args = update_batch_size_args()
     args.task_index = task_index
@@ -63,14 +64,17 @@ class Client(Iface):
     args.write(self._oprot)
     self._oprot.writeMessageEnd()
     self._oprot.trans.flush()
+    print("end send update")
 
   def recv_update_batch_size(self):
+    print("begin recv update")
     (fname, mtype, rseqid) = self._iprot.readMessageBegin()
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
       x.read(self._iprot)
       self._iprot.readMessageEnd()
       raise x
+    print("line 77 - UpdateBatchSize.py")
     result = update_batch_size_result()
     result.read(self._iprot)
     self._iprot.readMessageEnd()
@@ -258,7 +262,7 @@ class update_batch_size_result:
         break
       if fid == 0:
         if ftype == TType.I32:
-          self.success = iprot.readI32();
+          self.success = iprot.readI32()
         else:
           iprot.skip(ftype)
       else:
