@@ -82,8 +82,8 @@ class BatchSizeManager:
 		#tfactory = TTransport.TBufferedTransportFactory()
 		tfactory = TTransport.TFramedTransportFactory()
 		pfactory = TBinaryProtocol.TBinaryProtocolFactory()
-		#rpcServer = TServer.TSimpleServer(processor,transport, tfactory, pfactory)
-		rpcServer = TNonblockingServer.TNonblockingServer(processor,transport, tfactory, pfactory, threads=self.thread_num)
+		rpcServer = TServer.TSimpleServer(processor,transport, tfactory, pfactory)
+		#rpcServer = TNonblockingServer.TNonblockingServer(processor,transport, tfactory, pfactory, threads=self.thread_num)
 		tf.logging.info("Listening on port 8000...")	
 		return rpcServer
 
