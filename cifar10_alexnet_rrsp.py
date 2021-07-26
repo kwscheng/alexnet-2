@@ -84,7 +84,7 @@ def train():
 				labels = tf.one_hot(labels, 10, 1, 0)
 				network_fn = nets_factory.get_network_fn('alexnet_v2',num_classes=10) 
 				(logits,_) = network_fn(inputs)
-				cross_entropy = tf.losses.softmax_cross_entropy(
+				cross_entropy = tf.losses.sigmoid_cross_entropy(
 				logits=logits, 
 				onehot_labels=labels)
 
@@ -155,7 +155,7 @@ def train():
 					cpu_use=current_process.cpu_percent(interval=None)
 					memoryUse = pid_use.memory_info()[0]/2.**20
 			# call rrsp mechanism to coordinate the synchronization order and update the batch size
-					#batch_size_num = rpcClient.update_batch_size(FLAGS.task_id, 0,0,0, step, batch_size_num)
+					batch_size_num = rpcClient.update_batch_size(FLAGS.task_id, 0,0,0, step, batch_size_num)
 
 					train_accuracy = sess.run(train_acc, feed_dict={batch_size: batch_size_num})
 
