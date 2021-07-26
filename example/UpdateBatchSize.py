@@ -33,9 +33,8 @@ class Iface:
 
 class Client(Iface): 
   def __init__(self, iprot, oprot=None): #iprot = protocol (input) and oprot probably = protocol (output)
-    self._iprot = self._oprot = iprot
-    if oprot is not None:
-      self._oprot = oprot
+    self._iprot = iprot
+    self._oprot = iprot
     self._seqid = 0
 
   def update_batch_size(self, task_index, last_batch_time, avail_cpu, avail_memory, step, batch_size): #called by rrsp
