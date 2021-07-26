@@ -15,7 +15,7 @@ from nets import nets_factory
 import cifar10
 from tensorflow.python.client import timeline
 
-import threading2
+#import threading2
 
 from batchsizemanager import *
 
