@@ -79,7 +79,7 @@ def train():
 
 				decay_steps = 50000*350.0/FLAGS.batch_size
 				batch_size = tf.placeholder(dtype=tf.int32, shape=(), name='batch_size')
-				images, labels = cifar10.distorted_inputs(batch_size)
+				images, labels = cifar10.distorted_inputs(batch_size,FLAGS.task_id)
 				inputs = tf.reshape(images, [-1, _HEIGHT, _WIDTH, _DEPTH])
 				labels = tf.one_hot(labels, 10, 1, 0)
 				network_fn = nets_factory.get_network_fn('alexnet_v2',num_classes=10) 
