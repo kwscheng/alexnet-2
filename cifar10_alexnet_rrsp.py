@@ -7,6 +7,7 @@ import os.path
 import time
 import psutil
 import random
+import multiprocessing
 
 import numpy as np
 import tensorflow as tf
@@ -154,8 +155,8 @@ def train():
 	#		    tf.logging.info('write json')
 					cpu_use=current_process.cpu_percent(interval=None)
 					memoryUse = pid_use.memory_info()[0]/2.**20
+					mem = psutil.virtual_memory()
 			# call rrsp mechanism to coordinate the synchronization order and update the batch size
-					batch_size_num = rpcClient.update_batch_size(FLAGS.task_id, 0,0,0, step, batch_size_num)
 
 					train_accuracy = sess.run(train_acc, feed_dict={batch_size: batch_size_num})
 
@@ -170,6 +171,7 @@ def train():
 
 						csv_file.write(csv_output+"\n")
 						tf.logging.info(format_str % (datetime.now(), step, gs, loss_value, train_accuracy, examples_per_sec, sec_per_batch, duration, cpu_use, memoryUse, net_usage))
+						batch_size_num = rpcClient.update_batch_size(FLAGS.task_id, duration,multiprocessing.cpu_count(),mem.available, step, batch_size_num) #task_index, last_batch_time, avail_cpu, avail_memory, step, batch_size
 				csv_file.close()
 def main(argv=None):
 	cifar10.maybe_download_and_extract()
