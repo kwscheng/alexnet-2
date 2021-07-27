@@ -52,7 +52,7 @@ class Client(Iface):
 
   def send_update_batch_size(self, task_index, last_batch_time, avail_cpu, avail_memory, step, batch_size):
     print("begin send update")
-    self._oprot.writeMessageBegin('update_batch_size', TMessageType.CALL, self._seqid)
+    self._oprot.writeMessageBegin('update_batch_size'.encode('utf8'), TMessageType.CALL, self._seqid)
     args = update_batch_size_args()
     args.task_index = task_index
     args.last_batch_time = last_batch_time
