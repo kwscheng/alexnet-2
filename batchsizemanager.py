@@ -79,8 +79,8 @@ class BatchSizeManager:
 		processor = UpdateBatchSize.Processor(handler)
 		#transport = TSocket.TServerSocket(ps_host_name, 8000)
 		transport = TSocket.TServerSocket(host=ps_host_name, port=8000)
-		tfactory = TTransport.TBufferedTransportFactory()
-		#tfactory = TTransport.TFramedTransportFactory()
+		#tfactory = TTransport.TBufferedTransportFactory()
+		tfactory = TTransport.TFramedTransportFactory()
 		pfactory = TBinaryProtocol.TBinaryProtocolFactory()
 		#rpcServer = TServer.TSimpleServer(processor,transport, tfactory, pfactory)
 		rpcServer = TNonblockingServer.TNonblockingServer(processor,transport, tfactory, pfactory, threads=self.thread_num)
@@ -89,8 +89,8 @@ class BatchSizeManager:
 
 	def create_rpc_client(self, ps_host_name):
 		tsocket = TSocket.TSocket(ps_host_name, 8000)
-		transport = TTransport.TBufferedTransport(tsocket)
-		#transport = TTransport.TFramedTransport(tsocket)
+		#transport = TTransport.TBufferedTransport(tsocket)
+		transport = TTransport.TFramedTransport(tsocket)
 		protocol = TBinaryProtocol.TBinaryProtocol(transport)
 		rpcClient = Client(protocol)
 		transport.open()
