@@ -67,7 +67,7 @@ class Client(Iface):
 
   def recv_update_batch_size(self):
     print("begin recv update")
-    (fname, mtype, rseqid) = self._iprot.readMessageBegin() #problem, buff = self.handle.recv(sz)
+    #(fname, mtype, rseqid) = self._iprot.readMessageBegin() #problem, buff = self.handle.recv(sz)
     print("line 72 - UpdateBatchSize.py")
     if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
@@ -77,7 +77,7 @@ class Client(Iface):
     print("line 78 - UpdateBatchSize.py") #never reached
     result = update_batch_size_result()
     result.read(self._iprot)
-    self._iprot.readMessageEnd()
+    #self._iprot.readMessageEnd()
     if result.success is not None:
       return result.success
     raise TApplicationException(TApplicationException.MISSING_RESULT, "update_batch_size failed: unknown result");
