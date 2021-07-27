@@ -69,11 +69,11 @@ class Client(Iface):
     print("begin recv update")
     #(fname, mtype, rseqid) = self._iprot.readMessageBegin() #problem, buff = self.handle.recv(sz)
     print("line 72 - UpdateBatchSize.py")
-    if mtype == TMessageType.EXCEPTION:
+    """if mtype == TMessageType.EXCEPTION:
       x = TApplicationException()
       x.read(self._iprot)
       self._iprot.readMessageEnd()
-      raise x
+      raise x"""
     print("line 78 - UpdateBatchSize.py") #never reached
     result = update_batch_size_result()
     result.read(self._iprot)
@@ -91,6 +91,7 @@ class Processor(Iface, TProcessor):
 
   def process(self, iprot, oprot):
     (name, type, seqid) = iprot.readMessageBegin()
+    print("line 94 process")
     if name not in self._processMap:
       iprot.skip(TType.STRUCT)
       iprot.readMessageEnd()
@@ -105,6 +106,7 @@ class Processor(Iface, TProcessor):
     return True
 
   def process_update_batch_size(self, seqid, iprot, oprot):
+    print("line 109 processing")
     args = update_batch_size_args()
     args.read(iprot)
     iprot.readMessageEnd()
