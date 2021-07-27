@@ -8,6 +8,7 @@ import time
 import psutil
 import random
 import multiprocessing
+import logging
 
 import numpy as np
 import tensorflow as tf
@@ -43,6 +44,7 @@ def train():
 	pid = os.getpid()
 	pid_use = psutil.Process(pid)
 	current_process = psutil.Process()
+	logging.basicConfig(level=logging.DEBUG)
 	
 	global updated_batch_size_num
 	global passed_info
@@ -123,6 +125,7 @@ def train():
 
 				"""Train CIFAR-10 for a number of steps."""
 				batch_size_num = FLAGS.batch_size
+				netio = psutil.net_io_counters(pernic=True)
 				csv_file = open("./csv/alexnetrrsp_CPU_metrics_"+str(FLAGS.task_id)+".csv","w")
 				csv_file.write("time,datetime,step,global_step,loss,accuracy,val_accuracy,examples_sec,sec_batch,duration,cpu,mem,net_usage\n")
 				for step in range(FLAGS.max_steps):
@@ -143,7 +146,6 @@ def train():
 					run_metadata = tf.RunMetadata()
 					NETWORK_INTERFACE = 'lo'
 
-					netio = psutil.net_io_counters(pernic=True)
 					net_usage = (netio[NETWORK_INTERFACE].bytes_sent + netio[NETWORK_INTERFACE].bytes_recv)/ (1024*1024)
 					num_batches_per_epoch = NUM_EXAMPLES_PER_EPOCH_FOR_TRAIN / batch_size_num
 					decay_steps_num = int(num_batches_per_epoch * NUM_EPOCHS_PER_DECAY)
