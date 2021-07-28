@@ -77,7 +77,6 @@ class BatchSizeManager:
 		batchSizeHandler = BatchSizeHandler(self.initial_batch_size, self.num_of_replicas, self.thread_num)
 		handler = batchSizeHandler
 		processor = UpdateBatchSize.Processor(handler)
-		#transport = TSocket.TServerSocket(ps_host_name, 8000)
 		transport = TSocket.TServerSocket(host=ps_host_name, port=8000)
 		#tfactory = TTransport.TBufferedTransportFactory()
 		tfactory = TTransport.TFramedTransportFactory()

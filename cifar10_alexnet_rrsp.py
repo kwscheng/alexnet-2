@@ -8,7 +8,6 @@ import time
 import psutil
 import random
 import multiprocessing
-import logging
 
 import numpy as np
 import tensorflow as tf
@@ -44,7 +43,6 @@ def train():
 	pid = os.getpid()
 	pid_use = psutil.Process(pid)
 	current_process = psutil.Process()
-	logging.basicConfig(level=logging.DEBUG)
 	
 	global updated_batch_size_num
 	global passed_info
