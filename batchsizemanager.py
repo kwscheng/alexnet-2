@@ -87,7 +87,7 @@ class BatchSizeManager:
 		return rpcServer
 
 	def create_rpc_client(self, ps_host_name):
-		tsocket = TSocket.TSocket(ps_host_name, 8000)
+		tsocket = TSocket.TSocket(host=ps_host_name, port=8000)
 		#transport = TTransport.TBufferedTransport(tsocket)
 		transport = TTransport.TFramedTransport(tsocket)
 		protocol = TBinaryProtocol.TBinaryProtocol(transport)
